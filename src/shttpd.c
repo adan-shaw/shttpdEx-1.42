@@ -1506,6 +1506,7 @@ static int set_ssl (struct shttpd_ctx *ctx, const char *pem)
 		return (FALSE);
 	}
 
+	/*初始化必须的动态库函数API(为了跟上潮流, shttpd 默认使用系统自带的openssl)*/
 	for (fp = ssl_sw; fp->name != NULL; fp++)
 		if ((fp->ptr.v_void = dlsym (lib, fp->name)) == NULL)
 		{
@@ -1516,7 +1517,8 @@ static int set_ssl (struct shttpd_ctx *ctx, const char *pem)
 	/*Initialize SSL crap*/
 	SSL_library_init ();
 
-	if ((CTX = SSL_CTX_new (SSLv23_server_method ())) == NULL)
+	//if ((CTX = SSL_CTX_new (SSLv23_server_method ())) == NULL)
+	if ((CTX = SSL_CTX_new (SSLv3_server_method ())) == NULL)
 		_shttpd_elog (E_LOG, NULL, "SSL_CTX_new error");
 	else if (SSL_CTX_use_certificate_file (CTX, pem, SSL_FILETYPE_PEM) == 0)
 		_shttpd_elog (E_LOG, NULL, "cannot open %s", pem);

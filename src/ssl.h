@@ -14,6 +14,8 @@
  * built on any system with binary SSL libraries installed.
 */
 
+
+
 typedef struct ssl_st SSL;
 typedef struct ssl_method_st SSL_METHOD;
 typedef struct ssl_ctx_st SSL_CTX;
@@ -39,15 +41,13 @@ extern struct ssl_func ssl_sw[];
 #define	SSL_accept(x)	(* (int (*)(SSL *)) FUNC(1))(x)
 #define	SSL_connect(x)	(* (int (*)(SSL *)) FUNC(2))(x)
 #define	SSL_read(x,y,z)	(* (int (*)(SSL *, void *, int)) FUNC(3))((x),(y),(z))
-#define	SSL_write(x,y,z) \
-	(* (int (*)(SSL *, const void *,int)) FUNC(4))((x), (y), (z))
+#define	SSL_write(x,y,z) (* (int (*)(SSL *, const void *,int)) FUNC(4))((x), (y), (z))
 #define	SSL_get_error(x,y)(* (int (*)(SSL *, int)) FUNC(5))((x), (y))
 #define	SSL_set_fd(x,y)	(* (int (*)(SSL *, int)) FUNC(6))((x), (y))
 #define	SSL_new(x)	(* (SSL * (*)(SSL_CTX *)) FUNC(7))(x)
 #define	SSL_CTX_new(x)	(* (SSL_CTX * (*)(SSL_METHOD *)) FUNC(8))(x)
-#define	SSLv23_server_method()	(* (SSL_METHOD * (*)(void)) FUNC(9))()
+//#define	SSLv23_server_method()	(* (SSL_METHOD * (*)(void)) FUNC(9))()
+#define	SSLv3_server_method()	(* (SSL_METHOD * (*)(void)) FUNC(9))()
 #define	SSL_library_init() (* (int (*)(void)) FUNC(10))()
-#define	SSL_CTX_use_PrivateKey_file(x,y,z)	(* (int (*)(SSL_CTX *, \
-		const char *, int)) FUNC(11))((x), (y), (z))
-#define	SSL_CTX_use_certificate_file(x,y,z)	(* (int (*)(SSL_CTX *, \
-		const char *, int)) FUNC(12))((x), (y), (z))
+#define	SSL_CTX_use_PrivateKey_file(x,y,z)	(* (int (*)(SSL_CTX *, const char *, int)) FUNC(11))((x), (y), (z))
+#define	SSL_CTX_use_certificate_file(x,y,z)	(* (int (*)(SSL_CTX *, const char *, int)) FUNC(12))((x), (y), (z))

@@ -51,7 +51,7 @@ lib$(PROG).a: $(OBJS) compat_unix.o
 
 linux: lib$(PROG).a
 	# for linux only
-	$(CC) $(CFLAGS) standalone.c -o $(PROG) $(LIBS) -L. -ldl -lpthread -l$(PROG)
+	$(CC) $(CFLAGS) standalone.c -o $(PROG) $(LIBS) -L. -ldl -lpthread -lssl -lcrypto -l$(PROG)
 
 unix: lib$(PROG).a
 	$(CC) $(CFLAGS) standalone.c -o $(PROG) $(LIBS) -L. -l$(PROG)

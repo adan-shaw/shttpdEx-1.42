@@ -186,20 +186,20 @@ struct io_class
 struct stream
 {
 	struct conn *conn;
-	union channel chan;						/*Descriptor*/
-	struct io io;									/*IO buffer*/
+	union channel chan;								/*Descriptor*/
+	struct io io;											/*IO buffer*/
 	const struct io_class *io_class;	/*IO class*/
 	int headers_len;
 	big_int_t content_len;
 	unsigned int flags;
 #define	FLAG_HEADERS_PARSED	1
-#define	FLAG_SSL_ACCEPTED	2
-#define	FLAG_R			4						/*Can read in general*/
-#define	FLAG_W			8						/*Can write in general*/
-#define	FLAG_CLOSED		16
-#define	FLAG_DONT_CLOSE		32
-#define	FLAG_ALWAYS_READY	64		/*File, dir, user_func*/
-#define	FLAG_SUSPEND		128
+#define	FLAG_SSL_ACCEPTED		2
+#define	FLAG_R							4				/*Can read in general*/
+#define	FLAG_W							8				/*Can write in general*/
+#define	FLAG_CLOSED					16
+#define	FLAG_DONT_CLOSE			32
+#define	FLAG_ALWAYS_READY		64			/*File, dir, user_func*/
+#define	FLAG_SUSPEND				128
 };
 
 struct worker
@@ -261,7 +261,7 @@ struct shttpd_ctx
 {
 	SSL_CTX *ssl_ctx;							/*SSL context*/
 
-	struct llhead registered_uris;	/*User urls*/
+	struct llhead registered_uris;/*User urls*/
 	struct llhead error_handlers;	/*Embedded error handlers*/
 	struct llhead acl;						/*Access control list*/
 	struct llhead ssi_funcs;			/*SSI callback functions*/
