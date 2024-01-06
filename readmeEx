@@ -1,0 +1,24 @@
+这个shttpd-1.42 的源码, 代码写得非常标准, 工整, 实在没有啥可以挑剔的地方;
+
+唯一不足的是makefile 写得一般, 在linux 平台需要调整一下, 现在已经修正;
+
+这个shttpd-1.42 理论上可以在linux/freebsd/windows 平台上面跑, 而且代码质量非常可以, 可以深入阅读;
+
+不过这种跨平台代码, 阅读起来, 压力稍大;
+
+因为跨平台兼容代码比较多, c/c++ 水平不好, 很容易会晕船的, 比较考验c/c++ 代码阅读能力;
+
+
+
+本次update:
+	./examples/Makefile
+	./src/Makefile
+	./auto_clean.sh
+	./auto_make.sh
+	./auto_test.sh
+	./man
+	./man-shttpd1.42
+
+
+
+其他基本上没有改动, 代码质量可以, 想要该这个project 的源码, 压力有点大, 出错再改吧;
