@@ -29,11 +29,11 @@ int _shttpd_put_dir (const char *path)
 		(void) memcpy (buf, path, len);
 		buf[len] = '\0';
 
-		/*Try to create intermediate directory */
+		/*Try to create intermediate directory*/
 		if (_shttpd_stat (buf, &st) == -1 && _shttpd_mkdir (buf, 0755) != 0)
 			return (-1);
 
-		/*Is path itself a directory ? */
+		/*Is path itself a directory ?*/
 		if (p[1] == '\0')
 			return (0);
 	}
@@ -64,7 +64,7 @@ static int read_dir (struct stream *stream, void *buf, size_t len)
 			break;
 		DBG (("read_dir: %s", dp->d_name));
 
-		/*Do not show current dir and passwords file */
+		/*Do not show current dir and passwords file*/
 		if (strcmp (dp->d_name, ".") == 0 || strcmp (dp->d_name, HTPASSWD) == 0)
 			continue;
 
@@ -93,7 +93,7 @@ static int read_dir (struct stream *stream, void *buf, size_t len)
 	}
 	while (dp != NULL);
 
-	/*Append proper HTML footer for the page */
+	/*Append proper HTML footer for the page*/
 	if (dp == NULL && len >= sizeof (footer))
 	{
 		(void) memcpy (buf, footer, sizeof (footer));

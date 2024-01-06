@@ -10,7 +10,7 @@
 
 #include "defs.h"
 
-static int exit_flag;						/*Program termination flag */
+static int exit_flag;						/*Program termination flag*/
 
 static void signal_handler (int sig_num)
 {
@@ -20,7 +20,7 @@ static void signal_handler (int sig_num)
 	case SIGCHLD:
 		while (waitpid (-1, &sig_num, WNOHANG) > 0) ;
 		break;
-#endif /*!_WIN32 */
+#endif /*!_WIN32*/
 	default:
 		exit_flag = sig_num;
 		break;
@@ -38,7 +38,7 @@ int main (int argc, char *argv[])
 			_shttpd_usage (argv[0]);
 		exit (_shttpd_edit_passwords (argv[2], argv[3], argv[4], argv[5]));
 	}
-#endif /*NO_AUTH */
+#endif /*NO_AUTH*/
 
 	if (argc == 2 && (!strcmp (argv[1], "-h") || !strcmp (argv[1], "--help")))
 		_shttpd_usage (argv[0]);

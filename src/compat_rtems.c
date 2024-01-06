@@ -48,27 +48,27 @@ static rtems_task rtems_httpd_daemon (rtems_task_argument args)
 	/*
 	 * Initialize SHTTPD context.
 	 * Set WWW root to current WEB_ROOT_PATH.
-	 */
+	*/
 	ctx = shttpd_init (NULL, "document_root", httpd_args->webroot, NULL);
 
 	if (httpd_args != NULL)
 		if (httpd_args->addpages_callback != NULL)
 			httpd_args->addpages_callback (ctx);
 
-	/*Finished with args, so free them */
+	/*Finished with args, so free them*/
 	if (httpd_args != NULL)
 		free (httpd_args);
 
-	/*Open listening socket */
+	/*Open listening socket*/
 	shttpd_listen (ctx, 9000);
 
 	rtems_webserver_running = TRUE;
 
-	/*Serve connections infinitely until someone kills us */
+	/*Serve connections infinitely until someone kills us*/
 	while (rtems_webserver_running)
 		shttpd_poll (ctx, 1000);
 
-	/*Unreached, because we will be killed by a signal */
+	/*Unreached, because we will be killed by a signal*/
 	shttpd_fini (ctx);
 
 	rtems_task_delete (RTEMS_SELF);
@@ -169,7 +169,7 @@ int set_non_blocking_mode (int fd)
 	}
 	else
 	{
-		ret = 0;										/*Success */
+		ret = 0;										/*Success*/
 	}
 
 	return (ret);

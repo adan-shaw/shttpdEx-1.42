@@ -47,7 +47,7 @@ static int read_cgi (struct stream *stream, void *buf, size_t len)
 	 * from CGI script back to the remote end.
 	 * Reply line was alredy appended to the IO buffer in
 	 * decide_what_to_do(), with blank status code.
-	 */
+	*/
 
 	stream->flags |= FLAG_DONT_CLOSE;
 	io_inc_head (&stream->io, n);
@@ -65,7 +65,7 @@ static int read_cgi (struct stream *stream, void *buf, size_t len)
 	 * If we did not received full headers yet, we must not send any
 	 * data read from the CGI back to the client. Suspend sending by
 	 * setting tail = head, which tells that there is no data in IO buffer
-	 */
+	*/
 
 	if (stream->headers_len == 0)
 	{
@@ -73,35 +73,35 @@ static int read_cgi (struct stream *stream, void *buf, size_t len)
 		return (0);
 	}
 
-	/*Received all headers. Set status code for the connection. */
+	/*Received all headers. Set status code for the connection.*/
 	(void) memset (&parsed, 0, sizeof (parsed));
 	_shttpd_parse_headers (stream->io.buf, stream->headers_len, &parsed);
 	stream->content_len = parsed.cl.v_big_int;
 	stream->conn->status = (int) parsed.status.v_big_int;
 
-	/*If script outputs 'Location:' header, set status code to 302 */
+	/*If script outputs 'Location:' header, set status code to 302*/
 	if (parsed.location.v_vec.len > 0)
 		stream->conn->status = 302;
 
 	/*
 	 * If script did not output neither 'Location:' nor 'Status' headers,
 	 * set the default status code 200, which means 'success'.
-	 */
+	*/
 	if (stream->conn->status == 0)
 		stream->conn->status = 200;
 
-	/*Append the status line to the beginning of the output */
+	/*Append the status line to the beginning of the output*/
 	(void) _shttpd_snprintf (status, sizeof (status), "%3d", stream->conn->status);
 	(void) memcpy (stream->io.buf + 9, status, 3);
 	DBG (("read_cgi: content len %lu status %s", stream->content_len, status));
 
-	/*Next time, pass output directly back to the client */
+	/*Next time, pass output directly back to the client*/
 	assert ((big_int_t) stream->headers_len <= stream->io.total);
 	stream->io.total -= stream->headers_len;
 	stream->io.tail = 0;
 	stream->flags |= FLAG_HEADERS_PARSED;
 
-	/*Return 0 because we've already shifted the head */
+	/*Return 0 because we've already shifted the head*/
 	return (0);
 }
 

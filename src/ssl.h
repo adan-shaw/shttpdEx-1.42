@@ -27,8 +27,8 @@ typedef struct ssl_ctx_st SSL_CTX;
 */
 struct ssl_func
 {
-	const char *name;							/*SSL function name */
-	union variant ptr;						/*Function pointer */
+	const char *name;							/*SSL function name*/
+	union variant ptr;						/*Function pointer*/
 };
 
 extern struct ssl_func ssl_sw[];

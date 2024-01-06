@@ -19,11 +19,11 @@
 */
 struct io
 {
-	char *buf;										/*IO Buffer */
-	size_t size;									/*IO buffer size */
-	size_t head;									/*Bytes read */
-	size_t tail;									/*Bytes written */
-	size_t total;									/*Total bytes read */
+	char *buf;										/*IO Buffer*/
+	size_t size;									/*IO buffer size*/
+	size_t head;									/*Bytes read*/
+	size_t tail;									/*Bytes written*/
+	size_t total;									/*Total bytes read*/
 };
 
 static __inline void io_clear (struct io *io)
@@ -88,4 +88,4 @@ static __inline void io_inc_head (struct io *io, size_t n)
 	assert (io->head <= io->size);
 }
 
-#endif /*IO_HEADER_INCLUDED */
+#endif /*IO_HEADER_INCLUDED*/

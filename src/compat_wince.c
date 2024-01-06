@@ -87,18 +87,18 @@ FILE *fdopen (int handle, const char *mode)
 
  /*
   * Convert a FILETIME to a time_t
-  */
+ */
 static time_t convert_FILETIME_to_time_t (FILETIME * File_Time)
 {
 	__int64 Temp;
 
 	/*
 	 *  Convert the FILETIME structure to 100nSecs since 1601 (as a 64-bit value)
-	 */
+	*/
 	Temp = (((__int64) File_Time->dwHighDateTime) << 32) + (__int64) File_Time->dwLowDateTime;
 	/*
 	 *  Convert to seconds from 1970
-	 */
+	*/
 	return ((time_t) ((Temp - FT_EPOCH) / FT_TICKS));
 }
 
@@ -125,11 +125,11 @@ static struct tm *Convert_FILETIME_To_tm (FILETIME * File_Time)
 
 	/*
 	 *  Turn the FILETIME into a SYSTEMTIME
-	 */
+	*/
 	FileTimeToSystemTime (File_Time, &System_Time);
 	/*
 	 *  Use SYSTEMTIME to fill in the tm structure
-	 */
+	*/
 	tm.tm_sec = System_Time.wSecond;
 	tm.tm_min = System_Time.wMinute;
 	tm.tm_hour = System_Time.wHour;
@@ -142,22 +142,22 @@ static struct tm *Convert_FILETIME_To_tm (FILETIME * File_Time)
 	{
 		/*
 		 *  Check for leap year (every 4 years but not every 100 years but every 400 years)
-		 */
+		*/
 		if ((System_Time.wYear % 4) == 0)
 		{
 			/*
 			 *  It Is a 4th year
-			 */
+			*/
 			if ((System_Time.wYear % 100) == 0)
 			{
 				/*
 				 *  It is a 100th year
-				 */
+				*/
 				if ((System_Time.wYear % 400) == 0)
 				{
 					/*
 					 *  It is a 400th year: It is a leap year
-					 */
+					*/
 					tm.tm_yday++;
 				}
 			}
@@ -165,7 +165,7 @@ static struct tm *Convert_FILETIME_To_tm (FILETIME * File_Time)
 			{
 				/*
 				 *  It is not a 100th year: It is a leap year
-				 */
+				*/
 				tm.tm_yday++;
 			}
 		}
@@ -183,11 +183,11 @@ static void Convert_time_t_To_FILETIME (time_t Time, FILETIME * File_Time)
 	/*
 	 *  Use 64-bit calculation to convert seconds since 1970 to
 	 *  100nSecs since 1601
-	 */
+	*/
 	Temp = ((__int64) Time * FT_TICKS) + FT_EPOCH;
 	/*
 	 *  Put it into the FILETIME structure
-	 */
+	*/
 	File_Time->dwLowDateTime = (DWORD) Temp;
 	File_Time->dwHighDateTime = (DWORD) (Temp >> 32);
 }
@@ -202,7 +202,7 @@ static FILETIME *Convert_tm_To_FILETIME (struct tm *tm)
 
 	/*
 	 *  Use the tm structure to fill in a SYSTEM
-	 */
+	*/
 	System_Time.wYear = tm->tm_year + 1900;
 	System_Time.wMonth = tm->tm_mon + 1;
 	System_Time.wDayOfWeek = tm->tm_wday;
@@ -213,7 +213,7 @@ static FILETIME *Convert_tm_To_FILETIME (struct tm *tm)
 	System_Time.wMilliseconds = 0;
 	/*
 	 *  Convert it to a FILETIME and return it
-	 */
+	*/
 	SystemTimeToFileTime (&System_Time, &File_Time);
 	return (&File_Time);
 }
@@ -279,12 +279,12 @@ static void Initialize_Thread_Errno (int *Errno_Pointer)
 {
 	/*
 	 *  Make sure we have a slot
-	 */
+	*/
 	if (TLS_Errno_Slot == 0xffffffff)
 	{
 		/*
 		 *  No: Get one
-		 */
+		*/
 		TLS_Errno_Slot = (int) TlsAlloc ();
 		if (TLS_Errno_Slot == 0xffffffff)
 			ExitProcess (3);
@@ -295,17 +295,17 @@ static void Initialize_Thread_Errno (int *Errno_Pointer)
 	 *  at this point.  Make sure the critical
 	 *  section that protects the number of threads
 	 *  is initialized
-	 */
+	*/
 	if (Number_Of_Threads == 0)
 		InitializeCriticalSection (&Number_Of_Threads_Critical_Section);
 	/*
 	 *  Store the errno pointer
-	 */
+	*/
 	if (TlsSetValue (TLS_Errno_Slot, (LPVOID) Errno_Pointer) == 0)
 		ExitProcess (3);
 	/*
 	 *  Bump the number of threads
-	 */
+	*/
 	EnterCriticalSection (&Number_Of_Threads_Critical_Section);
 	Number_Of_Threads++;
 	if (Number_Of_Threads > 1)
@@ -313,7 +313,7 @@ static void Initialize_Thread_Errno (int *Errno_Pointer)
 		/*
 		 *  We have threads other than the main thread:
 		 *    Use thread-local storage
-		 */
+		*/
 		__WinCE_Errno_Pointer_Function = Get_Thread_Errno;
 	}
 	LeaveCriticalSection (&Number_Of_Threads_Critical_Section);
@@ -326,16 +326,16 @@ static int *Initialize_Errno (void)
 {
 	/*
 	 *  Initialize the main thread's errno in thread-local storage
-	 */
+	*/
 	Initialize_Thread_Errno (&Errno_Storage);
 	/*
 	 *  Set the errno function to be the one that returns the
 	 *  main thread's errno
-	 */
+	*/
 	__WinCE_Errno_Pointer_Function = Get_Main_Thread_Errno;
 	/*
 	 *  Return the main thread's errno
-	 */
+	*/
 	return &Errno_Storage;
 }
 
@@ -354,14 +354,14 @@ void __WinCE_Errno_Thread_Exit (void)
 {
 	/*
 	 *  Decrease the number of threads
-	 */
+	*/
 	EnterCriticalSection (&Number_Of_Threads_Critical_Section);
 	Number_Of_Threads--;
 	if (Number_Of_Threads <= 1)
 	{
 		/*
 		 *  We only have the main thread
-		 */
+		*/
 		__WinCE_Errno_Pointer_Function = Get_Main_Thread_Errno;
 	}
 	LeaveCriticalSection (&Number_Of_Threads_Critical_Section);
@@ -381,7 +381,7 @@ int _wstat (const WCHAR * path, struct _stat *buffer)
 	HANDLE handle;
 	WCHAR *p;
 
-	/*Fail if wildcard characters are specified */
+	/*Fail if wildcard characters are specified*/
 	if (wcscspn (path, L"?*") != wcslen (path))
 		return -1;
 
@@ -393,7 +393,7 @@ int _wstat (const WCHAR * path, struct _stat *buffer)
 	}
 	FindClose (handle);
 
-	/*Found: Convert the file times */
+	/*Found: Convert the file times*/
 	buffer->st_mtime = convert_FILETIME_to_time_t (&data.ftLastWriteTime);
 	if (data.ftLastAccessTime.dwLowDateTime || data.ftLastAccessTime.dwHighDateTime)
 		buffer->st_atime = convert_FILETIME_to_time_t (&data.ftLastAccessTime);
@@ -404,7 +404,7 @@ int _wstat (const WCHAR * path, struct _stat *buffer)
 	else
 		buffer->st_ctime = buffer->st_mtime;
 
-	/*Convert the file modes */
+	/*Convert the file modes*/
 	buffer->st_mode = (unsigned short) ((data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? (S_IFDIR | S_IEXEC) : S_IFREG);
 	buffer->st_mode |= (data.dwFileAttributes & FILE_ATTRIBUTE_READONLY) ? S_IREAD : (S_IREAD | S_IWRITE);
 	if ((p = wcsrchr (path, L'.')) != NULL)
@@ -415,15 +415,15 @@ int _wstat (const WCHAR * path, struct _stat *buffer)
 	}
 	buffer->st_mode |= (buffer->st_mode & 0700) >> 3;
 	buffer->st_mode |= (buffer->st_mode & 0700) >> 6;
-	/*Set the other information */
+	/*Set the other information*/
 	buffer->st_nlink = 1;
 	buffer->st_size = (unsigned long int) data.nFileSizeLow;
 	buffer->st_uid = 0;
 	buffer->st_gid = 0;
-	buffer->st_ino = 0 /*data.dwOID ? */ ;
+	buffer->st_ino = 0 /*data.dwOID ?*/ ;
 	buffer->st_dev = 0;
 
-	return 0;											/*success */
+	return 0;											/*success*/
 }
 
 /*
@@ -435,18 +435,18 @@ int _fstat (int handle, struct _stat *st)
 
 	/*
 	 *  Get the file information
-	 */
+	*/
 	if (!GetFileInformationByHandle ((HANDLE) handle, &Data))
 	{
 		/*
 		 *  Return error
-		 */
+		*/
 		errno = GetLastError ();
 		return (-1);
 	}
 	/*
 	 *  Found: Convert the file times
-	 */
+	*/
 	st->st_mtime = (time_t) ((*(__int64 *) & Data.ftLastWriteTime - FT_EPOCH) / FT_TICKS);
 	if (Data.ftLastAccessTime.dwLowDateTime || Data.ftLastAccessTime.dwHighDateTime)
 		st->st_atime = (time_t) ((*(__int64 *) & Data.ftLastAccessTime - FT_EPOCH) / FT_TICKS);
@@ -458,14 +458,14 @@ int _fstat (int handle, struct _stat *st)
 		st->st_ctime = st->st_mtime;
 	/*
 	 *  Convert the file modes
-	 */
+	*/
 	st->st_mode = (unsigned short) ((Data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? (S_IFDIR | S_IEXEC) : S_IFREG);
 	st->st_mode |= (Data.dwFileAttributes & FILE_ATTRIBUTE_READONLY) ? S_IREAD : (S_IREAD | S_IWRITE);
 	st->st_mode |= (st->st_mode & 0700) >> 3;
 	st->st_mode |= (st->st_mode & 0700) >> 6;
 	/*
 	 *  Set the other information
-	 */
+	*/
 	st->st_nlink = 1;
 	st->st_size = (unsigned long int) Data.nFileSizeLow;
 	st->st_uid = 0;
@@ -474,7 +474,7 @@ int _fstat (int handle, struct _stat *st)
 	st->st_dev = 0;
 	/*
 	 *  Return success
-	 */
+	*/
 	return (0);
 }
 
@@ -486,7 +486,7 @@ int _wopen (const wchar_t *filename, int oflag, ...)
 
 	/*
 	 *  Calculate the CreateFile arguments
-	 */
+	*/
 	Access = Modes[oflag & O_MODE_MASK];
 	ShareMode = (oflag & O_EXCL) ? 0 : (FILE_SHARE_READ | FILE_SHARE_WRITE);
 	if (oflag & O_TRUNC)
@@ -498,7 +498,7 @@ int _wopen (const wchar_t *filename, int oflag, ...)
 
 	/*
 	 *  Deal with errors
-	 */
+	*/
 	if (Handle == INVALID_HANDLE_VALUE)
 	{
 		errno = GetLastError ();
@@ -508,7 +508,7 @@ int _wopen (const wchar_t *filename, int oflag, ...)
 	}
 	/*
 	 *  Return the handle
-	 */
+	*/
 	return (int) Handle;
 }
 
@@ -612,7 +612,7 @@ wchar_t *_wgetcwd (wchar_t *buffer, int maxlen)
 		errno = GetLastError ();
 		return NULL;
 	}
-	/*Remove the filename part of the path to leave the directory */
+	/*Remove the filename part of the path to leave the directory*/
 	p = wcsrchr (wszPath, L'\\');
 	if (p)
 		*p = L'\0';
@@ -642,12 +642,12 @@ struct tm *gmtime (const time_t * TimeP)
 
 	/*
 	 *  Deal with null time pointer
-	 */
+	*/
 	if (!TimeP)
 		return (NULL);
 	/*
 	 *  time_t -> FILETIME -> tm
-	 */
+	*/
 	Convert_time_t_To_FILETIME (*TimeP, &File_Time);
 	return (Convert_FILETIME_To_tm (&File_Time));
 }
@@ -661,12 +661,12 @@ struct tm *localtime (const time_t * TimeP)
 
 	/*
 	 *  Deal with null time pointer
-	 */
+	*/
 	if (!TimeP)
 		return (NULL);
 	/*
 	 *  time_t -> FILETIME -> Local FILETIME -> tm
-	 */
+	*/
 	Convert_time_t_To_FILETIME (*TimeP, &File_Time);
 	FileTimeToLocalFileTime (&File_Time, &Local_File_Time);
 	return (Convert_FILETIME_To_tm (&Local_File_Time));
@@ -682,7 +682,7 @@ time_t mktime (struct tm *tm)
 
 	/*
 	 *  tm -> Local FILETIME -> FILETIME -> time_t
-	 */
+	*/
 	Local_File_Time = Convert_tm_To_FILETIME (tm);
 	LocalFileTimeToFileTime (Local_File_Time, &File_Time);
 	return (convert_FILETIME_to_time_t (&File_Time));
@@ -699,16 +699,16 @@ time_t time (time_t * TimeP)
 
 	/*
 	 *  Get the current system time
-	 */
+	*/
 	GetSystemTime (&System_Time);
 	/*
 	 *  SYSTEMTIME -> FILETIME -> time_t
-	 */
+	*/
 	SystemTimeToFileTime (&System_Time, &File_Time);
 	Result = convert_FILETIME_to_time_t (&File_Time);
 	/*
 	 *  Return the time_t
-	 */
+	*/
 	if (TimeP)
 		*TimeP = Result;
 	return (Result);
@@ -728,31 +728,31 @@ void tzset (void)
 
 	/*
 	 *  Get our current timezone information
-	 */
+	*/
 	Result = GetTimeZoneInformation (&Info);
 	switch (Result)
 	{
 		/*
 		 *  We are on standard time
-		 */
+		*/
 	case TIME_ZONE_ID_STANDARD:
 		daylight = 0;
 		break;
 		/*
 		 *  We are on daylight savings time
-		 */
+		*/
 	case TIME_ZONE_ID_DAYLIGHT:
 		daylight = 1;
 		break;
 		/*
 		 *  We don't know the timezone information (leave it GMT)
-		 */
+		*/
 	default:
 		return;
 	}
 	/*
 	 *  Extract the timezone information
-	 */
+	*/
 	timezone = Info.Bias * 60;
 	if (Info.StandardName[0])
 		WideCharToMultiByte (CP_ACP, 0, Info.StandardName, -1, Standard_Name, sizeof (Standard_Name) - 1, NULL, NULL);
@@ -1072,42 +1072,42 @@ static _CONST char *_CONST mname[12] = { "January", "February", "March", "April"
    numbering used in "%g%G%V", avoiding overflow.*/
 static int _DEFUN (iso_year_adjust, (tim_p), _CONST struct tm *tim_p)
 {
-	/*Account for fact that tm_year==0 is year 1900. */
+	/*Account for fact that tm_year==0 is year 1900.*/
 	int leap = isleap (tim_p->tm_year + (YEAR_BASE - (tim_p->tm_year < 0 ? 0 : 2000)));
 
 	/*Pack the yday, wday, and leap year into a single int since there are so
-	   many disparate cases. */
+	   many disparate cases.*/
 #define PACK(yd, wd, lp) (((yd) << 4) + (wd << 1) + (lp))
 	switch (PACK (tim_p->tm_yday, tim_p->tm_wday, leap))
 	{
-	case PACK (0, 5, 0):					/*Jan 1 is Fri, not leap. */
-	case PACK (0, 6, 0):					/*Jan 1 is Sat, not leap. */
-	case PACK (0, 0, 0):					/*Jan 1 is Sun, not leap. */
-	case PACK (0, 5, 1):					/*Jan 1 is Fri, leap year. */
-	case PACK (0, 6, 1):					/*Jan 1 is Sat, leap year. */
-	case PACK (0, 0, 1):					/*Jan 1 is Sun, leap year. */
-	case PACK (1, 6, 0):					/*Jan 2 is Sat, not leap. */
-	case PACK (1, 0, 0):					/*Jan 2 is Sun, not leap. */
-	case PACK (1, 6, 1):					/*Jan 2 is Sat, leap year. */
-	case PACK (1, 0, 1):					/*Jan 2 is Sun, leap year. */
-	case PACK (2, 0, 0):					/*Jan 3 is Sun, not leap. */
-	case PACK (2, 0, 1):					/*Jan 3 is Sun, leap year. */
-		return -1;									/*Belongs to last week of previous year. */
-	case PACK (362, 1, 0):				/*Dec 29 is Mon, not leap. */
-	case PACK (363, 1, 1):				/*Dec 29 is Mon, leap year. */
-	case PACK (363, 1, 0):				/*Dec 30 is Mon, not leap. */
-	case PACK (363, 2, 0):				/*Dec 30 is Tue, not leap. */
-	case PACK (364, 1, 1):				/*Dec 30 is Mon, leap year. */
-	case PACK (364, 2, 1):				/*Dec 30 is Tue, leap year. */
-	case PACK (364, 1, 0):				/*Dec 31 is Mon, not leap. */
-	case PACK (364, 2, 0):				/*Dec 31 is Tue, not leap. */
-	case PACK (364, 3, 0):				/*Dec 31 is Wed, not leap. */
-	case PACK (365, 1, 1):				/*Dec 31 is Mon, leap year. */
-	case PACK (365, 2, 1):				/*Dec 31 is Tue, leap year. */
-	case PACK (365, 3, 1):				/*Dec 31 is Wed, leap year. */
-		return 1;										/*Belongs to first week of next year. */
+	case PACK (0, 5, 0):					/*Jan 1 is Fri, not leap.*/
+	case PACK (0, 6, 0):					/*Jan 1 is Sat, not leap.*/
+	case PACK (0, 0, 0):					/*Jan 1 is Sun, not leap.*/
+	case PACK (0, 5, 1):					/*Jan 1 is Fri, leap year.*/
+	case PACK (0, 6, 1):					/*Jan 1 is Sat, leap year.*/
+	case PACK (0, 0, 1):					/*Jan 1 is Sun, leap year.*/
+	case PACK (1, 6, 0):					/*Jan 2 is Sat, not leap.*/
+	case PACK (1, 0, 0):					/*Jan 2 is Sun, not leap.*/
+	case PACK (1, 6, 1):					/*Jan 2 is Sat, leap year.*/
+	case PACK (1, 0, 1):					/*Jan 2 is Sun, leap year.*/
+	case PACK (2, 0, 0):					/*Jan 3 is Sun, not leap.*/
+	case PACK (2, 0, 1):					/*Jan 3 is Sun, leap year.*/
+		return -1;									/*Belongs to last week of previous year.*/
+	case PACK (362, 1, 0):				/*Dec 29 is Mon, not leap.*/
+	case PACK (363, 1, 1):				/*Dec 29 is Mon, leap year.*/
+	case PACK (363, 1, 0):				/*Dec 30 is Mon, not leap.*/
+	case PACK (363, 2, 0):				/*Dec 30 is Tue, not leap.*/
+	case PACK (364, 1, 1):				/*Dec 30 is Mon, leap year.*/
+	case PACK (364, 2, 1):				/*Dec 30 is Tue, leap year.*/
+	case PACK (364, 1, 0):				/*Dec 31 is Mon, not leap.*/
+	case PACK (364, 2, 0):				/*Dec 31 is Tue, not leap.*/
+	case PACK (364, 3, 0):				/*Dec 31 is Wed, not leap.*/
+	case PACK (365, 1, 1):				/*Dec 31 is Mon, leap year.*/
+	case PACK (365, 2, 1):				/*Dec 31 is Tue, leap year.*/
+	case PACK (365, 3, 1):				/*Dec 31 is Wed, leap year.*/
+		return 1;										/*Belongs to first week of next year.*/
 	}
-	return 0;											/*Belongs to specified year. */
+	return 0;											/*Belongs to specified year.*/
 #undef PACK
 }
 
@@ -1174,7 +1174,7 @@ size_t _DEFUN (strftime, (s, maxsize, format, tim_p), char *s _AND size_t maxsiz
 			break;
 		case 'c':
 			{
-				/*Length is not known because of %C%y, so recurse. */
+				/*Length is not known because of %C%y, so recurse.*/
 				size_t adjust = strftime (&s[count], maxsize - count,
 					"%a %b %e %H:%M:%S %C%y", tim_p);
 				if (adjust > 0)
@@ -1204,7 +1204,7 @@ size_t _DEFUN (strftime, (s, maxsize, format, tim_p), char *s _AND size_t maxsiz
 
 				   Be careful of both overflow and sign adjustment due to the
 				   asymmetric range of years.
-				 */
+				*/
 				int neg = tim_p->tm_year < -YEAR_BASE;
 				int century = tim_p->tm_year >= 0 ? tim_p->tm_year / 100 + YEAR_BASE / 100 : abs (tim_p->tm_year + YEAR_BASE) / 100;
 				count += snprintf (&s[count], maxsize - count, "%s%.*d", neg ? "-" : "", 2 - neg, century);
@@ -1224,7 +1224,7 @@ size_t _DEFUN (strftime, (s, maxsize, format, tim_p), char *s _AND size_t maxsiz
 			break;
 		case 'D':
 		case 'x':
-			/*%m/%d/%y */
+			/*%m/%d/%y*/
 			if (count < maxsize - 8)
 			{
 				sprintf (&s[count], "%.2d/%.2d/%.2d", tim_p->tm_mon + 1, tim_p->tm_mday, tim_p->tm_year >= 0 ? tim_p->tm_year % 100 : abs (tim_p->tm_year + YEAR_BASE) % 100);
@@ -1235,7 +1235,7 @@ size_t _DEFUN (strftime, (s, maxsize, format, tim_p), char *s _AND size_t maxsiz
 			break;
 		case 'F':
 			{
-				/*Length is not known because of %C%y, so recurse. */
+				/*Length is not known because of %C%y, so recurse.*/
 				size_t adjust = strftime (&s[count], maxsize - count,
 					"%C%y-%m-%d", tim_p);
 				if (adjust > 0)
@@ -1248,7 +1248,7 @@ size_t _DEFUN (strftime, (s, maxsize, format, tim_p), char *s _AND size_t maxsiz
 			if (count < maxsize - 2)
 			{
 				/*Be careful of both overflow and negative years, thanks to
-				   the asymmetric range of years. */
+				   the asymmetric range of years.*/
 				int adjust = iso_year_adjust (tim_p);
 				int year = tim_p->tm_year >= 0 ? tim_p->tm_year % 100 : abs (tim_p->tm_year + YEAR_BASE) % 100;
 				if (adjust < 0 && tim_p->tm_year <= -YEAR_BASE)
@@ -1265,7 +1265,7 @@ size_t _DEFUN (strftime, (s, maxsize, format, tim_p), char *s _AND size_t maxsiz
 			{
 				/*See the comments for 'C' and 'Y'; this is a variable length
 				   field.  Although there is no requirement for a minimum number
-				   of digits, we use 4 for consistency with 'Y'. */
+				   of digits, we use 4 for consistency with 'Y'.*/
 				int neg = tim_p->tm_year < -YEAR_BASE;
 				int adjust = iso_year_adjust (tim_p);
 				int century = tim_p->tm_year >= 0 ? tim_p->tm_year / 100 + YEAR_BASE / 100 : abs (tim_p->tm_year + YEAR_BASE) / 100;
@@ -1459,7 +1459,7 @@ size_t _DEFUN (strftime, (s, maxsize, format, tim_p), char *s _AND size_t maxsiz
 				else if (adjust < 0)
 					/*Previous year has 53 weeks if current year starts on
 					   Fri, and also if current year starts on Sat and
-					   previous year was leap year. */
+					   previous year was leap year.*/
 					week = 52 + (4 >= (wday - tim_p->tm_yday - isleap (tim_p->tm_year + (YEAR_BASE - 1 - (tim_p->tm_year < 0 ? 0 : 2000)))));
 				sprintf (&s[count], "%.2d", week);
 				count += 2;
@@ -1487,7 +1487,7 @@ size_t _DEFUN (strftime, (s, maxsize, format, tim_p), char *s _AND size_t maxsiz
 			if (count < maxsize - 2)
 			{
 				/*Be careful of both overflow and negative years, thanks to
-				   the asymmetric range of years. */
+				   the asymmetric range of years.*/
 				int year = tim_p->tm_year >= 0 ? tim_p->tm_year % 100 : abs (tim_p->tm_year + YEAR_BASE) % 100;
 				sprintf (&s[count], "%.2d", year);
 				count += 2;
@@ -1497,7 +1497,7 @@ size_t _DEFUN (strftime, (s, maxsize, format, tim_p), char *s _AND size_t maxsiz
 			break;
 		case 'Y':
 			{
-				/*Length is not known because of %C%y, so recurse. */
+				/*Length is not known because of %C%y, so recurse.*/
 				size_t adjust = strftime (&s[count], maxsize - count,
 					"%C%y", tim_p);
 				if (adjust > 0)
@@ -1517,7 +1517,7 @@ size_t _DEFUN (strftime, (s, maxsize, format, tim_p), char *s _AND size_t maxsiz
 					TZ_LOCK;
 					/*The sign of this is exactly opposite the envvar TZ.  We
 					   could directly use the global _timezone for tm_isdst==0,
-					   but have to use __tzrule for daylight savings. */
+					   but have to use __tzrule for daylight savings.*/
 					offset = -tz->__tzrule[tim_p->tm_isdst > 0].offset;
 					TZ_UNLOCK;
 					sprintf (&s[count], "%+03ld%.2ld", offset / SECSPERHOUR, labs (offset / SECSPERMIN) % 60L);

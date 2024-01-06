@@ -15,9 +15,9 @@
 
 #include "defs.h"
 
-time_t _shttpd_current_time;		/*Current UTC time */
-int _shttpd_tz_offset;					/*Time zone offset from UTC */
-int _shttpd_exit_flag;					/*Program exit flag */
+time_t _shttpd_current_time;		/*Current UTC time*/
+int _shttpd_tz_offset;					/*Time zone offset from UTC*/
+int _shttpd_exit_flag;					/*Program exit flag*/
 
 const struct vec _shttpd_known_http_methods[] = {
 	{"GET", 3},
@@ -123,7 +123,7 @@ int _shttpd_url_decode (const char *src, int src_len, char *dst, int dst_len)
 			break;
 		}
 
-	dst[j] = '\0';								/*Null-terminate the destination */
+	dst[j] = '\0';								/*Null-terminate the destination*/
 
 	return (j);
 }
@@ -199,7 +199,7 @@ static int shttpd_open_listening_port (int port)
 
 #ifndef _WIN32
 	(void) fcntl (sock, F_SETFD, FD_CLOEXEC);
-#endif /*!_WIN32 */
+#endif /*!_WIN32*/
 
 	return (sock);
 fail:
@@ -218,7 +218,7 @@ int _shttpd_get_headers_len (const char *buf, size_t buflen)
 	int len = 0;
 
 	for (s = buf, e = s + buflen - 1; len == 0 && s < e; s++)
-		/*Control characters are not allowed but >=128 is. */
+		/*Control characters are not allowed but >=128 is.*/
 		if (!isprint (*(unsigned char *) s) && *s != '\r' && *s != '\n' && *(unsigned char *) s < 128)
 			len = -1;
 		else if (s[0] == '\n' && s[1] == '\n')
@@ -303,7 +303,7 @@ static time_t date_to_epoch (const char *s)
 	else if (tm.tm_year < 70)
 		tm.tm_year += 100;
 
-	/*Set Daylight Saving Time field */
+	/*Set Daylight Saving Time field*/
 	tmp = localtime (&_shttpd_current_time);
 	tm.tm_isdst = tmp->tm_isdst;
 
@@ -332,30 +332,30 @@ void _shttpd_parse_headers (const char *s, int len, struct headers *parsed)
 
 	DBG (("parsing headers (len %d): [%.*s]", len, len, s));
 
-	/*Loop through all headers in the request */
+	/*Loop through all headers in the request*/
 	while (s < e)
 	{
 
-		/*Find where this header ends */
+		/*Find where this header ends*/
 		for (p = s; p < e && *p != '\n';)
 			p++;
 
-		/*Is this header known to us ? */
+		/*Is this header known to us ?*/
 		for (h = http_headers; h->len != 0; h++)
 			if (e - s > h->len && !_shttpd_strncasecmp (s, h->name, h->len))
 				break;
 
-		/*If the header is known to us, store its value */
+		/*If the header is known to us, store its value*/
 		if (h->len != 0)
 		{
 
-			/*Shift to where value starts */
+			/*Shift to where value starts*/
 			s += h->len;
 
-			/*Find place to store the value */
+			/*Find place to store the value*/
 			v = (union variant *) ((char *) parsed + h->offset);
 
-			/*Fetch header value into the connection structure */
+			/*Fetch header value into the connection structure*/
 			if (h->type == HDR_STRING)
 			{
 				v->v_vec.ptr = s;
@@ -373,7 +373,7 @@ void _shttpd_parse_headers (const char *s, int len, struct headers *parsed)
 			}
 		}
 
-		s = p + 1;									/*Shift to the next header */
+		s = p + 1;									/*Shift to the next header*/
 	}
 }
 
@@ -426,7 +426,7 @@ void _shttpd_get_mime_type (struct shttpd_ctx *ctx, const char *uri, int len, st
 	const char *eq, *p = ctx->options[OPT_MIME_TYPES];
 	int i, n, ext_len;
 
-	/*Firt, loop through the custom mime types if any */
+	/*Firt, loop through the custom mime types if any*/
 	FOR_EACH_WORD_IN_LIST (p, n)
 	{
 		if ((eq = memchr (p, '=', n)) == NULL || eq >= p + n || eq == p)
@@ -440,7 +440,7 @@ void _shttpd_get_mime_type (struct shttpd_ctx *ctx, const char *uri, int len, st
 		}
 	}
 
-	/*If no luck, try built-in mime types */
+	/*If no luck, try built-in mime types*/
 	for (i = 0; builtin_mime_types[i].extension != NULL; i++)
 	{
 		ext_len = builtin_mime_types[i].ext_len;
@@ -452,7 +452,7 @@ void _shttpd_get_mime_type (struct shttpd_ctx *ctx, const char *uri, int len, st
 		}
 	}
 
-	/*Oops. This extension is unknown to us. Fallback to text/plain */
+	/*Oops. This extension is unknown to us. Fallback to text/plain*/
 	vec->ptr = "text/plain";
 	vec->len = strlen (vec->ptr);
 }
@@ -469,7 +469,7 @@ static int find_index_file (struct conn *c, char *path, size_t maxpath, struct s
 
 	FOR_EACH_WORD_IN_LIST (s, len)
 	{
-		/*path must end with '/' character */
+		/*path must end with '/' character*/
 		_shttpd_snprintf (buf, sizeof (buf), "%s%.*s", path, len, s);
 		if (_shttpd_stat (buf, stp) == 0)
 		{
@@ -497,7 +497,7 @@ static int get_path_info (struct conn *c, char *path, struct stat *stp)
 	p = path + strlen (path);
 	e = path + strlen (c->ctx->options[OPT_ROOT]) + 2;
 
-	/*Strip directory parts of the path one by one */
+	/*Strip directory parts of the path one by one*/
 	for (; p > e; p--)
 		if (*p == '/')
 		{
@@ -541,7 +541,7 @@ static void decide_what_to_do (struct conn *c)
 
 	(void) _shttpd_snprintf (path, sizeof (path), "%s%s", root, c->uri);
 
-	/*User may use the aliases - check URI for mount point */
+	/*User may use the aliases - check URI for mount point*/
 	if (is_alias (c->ctx, c->uri, &alias_uri, &alias_path) != NULL)
 	{
 		(void) _shttpd_snprintf (path, sizeof (path), "%.*s%s", alias_path.len, alias_path.ptr, c->uri + alias_uri.len);
@@ -554,14 +554,14 @@ static void decide_what_to_do (struct conn *c)
 		_shttpd_send_authorization_request (c);
 	}
 	else
-#endif /*NO_AUTH */
+#endif /*NO_AUTH*/
 	if ((ruri = _shttpd_is_registered_uri (c->ctx, c->uri)) != NULL)
 	{
 		_shttpd_setup_embedded_stream (c, ruri->callback, ruri->callback_data);
 	}
 	else if (strstr (path, HTPASSWD))
 	{
-		/*Do not allow to view passwords files */
+		/*Do not allow to view passwords files*/
 		_shttpd_send_server_error (c, 403, "Forbidden");
 	}
 	else
@@ -571,7 +571,7 @@ static void decide_what_to_do (struct conn *c)
 		_shttpd_send_authorization_request (c);
 	}
 	else
-#endif /*NO_AUTH */
+#endif /*NO_AUTH*/
 	if (c->method == METHOD_PUT)
 	{
 		c->status = _shttpd_stat (path, &st) == 0 ? 200 : 201;
@@ -650,7 +650,7 @@ static void decide_what_to_do (struct conn *c)
 		{
 			_shttpd_do_cgi (c);
 		}
-#endif /*NO_CGI */
+#endif /*NO_CGI*/
 #if !defined(NO_SSI)
 	}
 	else if (_shttpd_match_extension (path, c->ctx->options[OPT_SSI_EXTENSIONS]))
@@ -663,7 +663,7 @@ static void decide_what_to_do (struct conn *c)
 		{
 			_shttpd_do_ssi (c);
 		}
-#endif /*NO_CGI */
+#endif /*NO_CGI*/
 	}
 	else if (c->ch.ims.v_time && st.st_mtime <= c->ch.ims.v_time)
 	{
@@ -683,7 +683,7 @@ static int set_request_method (struct conn *c)
 {
 	const struct vec *v;
 
-	/*Set the request method */
+	/*Set the request method*/
 	for (v = _shttpd_known_http_methods; v->ptr != NULL; v++)
 		if (!memcmp (c->rem.io.buf, v->ptr, v->len))
 		{
@@ -713,7 +713,7 @@ static void parse_http_request (struct conn *c)
 		return;
 	}
 	else if (req_len < 16)
-	{															/*Minimal: "GET / HTTP/1.0\n\n" */
+	{															/*Minimal: "GET / HTTP/1.0\n\n"*/
 		_shttpd_send_server_error (c, 400, "Bad request");
 	}
 	else if (set_request_method (c))
@@ -733,7 +733,7 @@ static void parse_http_request (struct conn *c)
 	DBG (("Conn %d: parsing request: [%.*s]", c->rem.chan.sock, req_len, s));
 	c->rem.flags |= FLAG_HEADERS_PARSED;
 
-	/*Set headers pointer. Headers follow the request line */
+	/*Set headers pointer. Headers follow the request line*/
 	c->headers = memchr (c->request, '\n', req_len);
 	assert (c->headers != NULL);
 	assert (c->headers < c->request + req_len);
@@ -745,21 +745,21 @@ static void parse_http_request (struct conn *c)
 	 * Now make a copy of the URI, because it will be URL-decoded,
 	 * and we need a copy of unmodified URI for the access log.
 	 * First, we skip the REQUEST_METHOD and shift to the URI.
-	 */
+	*/
 	for (p = c->request, e = p + req_len; *p != ' ' && p < e; p++) ;
 	while (p < e && *p == ' ')
 		p++;
 
-	/*Now remember where URI starts, and shift to the end of URI */
+	/*Now remember where URI starts, and shift to the end of URI*/
 	for (start = p; p < e && !isspace ((unsigned char) *p);)
 		p++;
 	uri_len = p - start;
 
-	/*Skip space following the URI */
+	/*Skip space following the URI*/
 	while (p < e && *p == ' ')
 		p++;
 
-	/*Now comes the HTTP-Version in the form HTTP/<major>.<minor> */
+	/*Now comes the HTTP-Version in the form HTTP/<major>.<minor>*/
 	if (sscanf (p, "HTTP/%lu.%lu%n", &c->major_version, &c->minor_version, &n) != 2 || p[n] != '\0')
 	{
 		_shttpd_send_server_error (c, 400, "Bad HTTP version");
@@ -781,7 +781,7 @@ static void parse_http_request (struct conn *c)
 		_shttpd_strlcpy (c->uri, (char *) start, uri_len + 1);
 		_shttpd_parse_headers (c->headers, (c->request + req_len) - c->headers, &c->ch);
 
-		/*Remove the length of request from total, count only data */
+		/*Remove the length of request from total, count only data*/
 		assert (c->rem.io.total >= (big_int_t) req_len);
 		c->rem.io.total -= req_len;
 		c->rem.content_len = c->ch.cl.v_big_int;
@@ -798,8 +798,8 @@ static void add_socket (struct worker *worker, int sock, int is_ssl)
 #if !defined(NO_SSL)
 	SSL *ssl = NULL;
 #else
-	is_ssl = is_ssl;							/*supress warnings */
-#endif /*NO_SSL */
+	is_ssl = is_ssl;							/*supress warnings*/
+#endif /*NO_SSL*/
 
 	sa.len = sizeof (sa.u.sin);
 	(void) _shttpd_set_non_blocking_mode (sock);
@@ -819,14 +819,14 @@ static void add_socket (struct worker *worker, int sock, int is_ssl)
 		_shttpd_elog (l, NULL, "add_socket: SSL_set_fd: %s", strerror (ERRNO));
 		(void) closesocket (sock);
 		SSL_free (ssl);
-#endif /*NO_SSL */
+#endif /*NO_SSL*/
 	}
 	else if ((c = calloc (1, sizeof (*c) + 2 * URI_MAX)) == NULL)
 	{
 #if !defined(NO_SSL)
 		if (ssl)
 			SSL_free (ssl);
-#endif /*NO_SSL */
+#endif /*NO_SSL*/
 		(void) closesocket (sock);
 		_shttpd_elog (l, NULL, "add_socket: calloc: %s", strerror (ERRNO));
 	}
@@ -849,7 +849,7 @@ static void add_socket (struct worker *worker, int sock, int is_ssl)
 		c->rem.io_class = &_shttpd_io_socket;
 		c->rem.chan.sock = sock;
 
-		/*Set IO buffers */
+		/*Set IO buffers*/
 		c->loc.io.buf = (char *) (c + 1);
 		c->rem.io.buf = c->loc.io.buf + URI_MAX;
 		c->loc.io.size = c->rem.io.size = URI_MAX;
@@ -862,7 +862,7 @@ static void add_socket (struct worker *worker, int sock, int is_ssl)
 			c->rem.chan.ssl.ssl = ssl;
 			_shttpd_ssl_handshake (&c->rem);
 		}
-#endif /*NO_SSL */
+#endif /*NO_SSL*/
 
 		LL_TAIL (&worker->connections, &c->link);
 		worker->num_conns++;
@@ -884,7 +884,7 @@ static void pass_socket (struct shttpd_ctx *ctx, int sock, int is_ssl)
 
 	lazy = first_worker (ctx);
 
-	/*Find least busy worker */
+	/*Find least busy worker*/
 	LL_FOREACH (&ctx->workers, lp)
 	{
 		worker = LL_ENTRY (lp, struct worker, link);
@@ -952,18 +952,18 @@ static void read_stream (struct stream *stream)
 	len = io_space_len (&stream->io);
 	assert (len > 0);
 
-	/*Do not read more that needed */
+	/*Do not read more that needed*/
 	if (stream->content_len > 0 && stream->io.total + len > stream->content_len)
 		len = stream->content_len - stream->io.total;
 
-	/*Read from underlying channel */
+	/*Read from underlying channel*/
 	assert (stream->io_class != NULL);
 	n = stream->io_class->read (stream, io_space (&stream->io), len);
 
 	if (n > 0)
 		io_inc_head (&stream->io, n);
 	else if (n == -1 && (ERRNO == EINTR || ERRNO == EWOULDBLOCK))
-		n = n;											/*Ignore EINTR and EAGAIN */
+		n = n;											/*Ignore EINTR and EAGAIN*/
 	else if (!(stream->flags & FLAG_DONT_CLOSE))
 		_shttpd_stop_stream (stream);
 
@@ -974,7 +974,7 @@ static void read_stream (struct stream *stream)
 	 * XXX We do not close the remote stream though! It may be
 	 * a POST data completed transfer, we do not want the socket
 	 * to be closed.
-	 */
+	*/
 	if (stream->content_len > 0 && stream == &stream->conn->loc)
 	{
 		assert (stream->io.total <= stream->content_len);
@@ -992,7 +992,7 @@ static void write_stream (struct stream *from, struct stream *to)
 	len = io_data_len (&from->io);
 	assert (len > 0);
 
-	/*TODO: should be assert on CAN_WRITE flag */
+	/*TODO: should be assert on CAN_WRITE flag*/
 	n = to->io_class->write (to, io_data (&from->io), len);
 	to->conn->expire_time = _shttpd_current_time + EXPIRE_TIME;
 	DBG (("write_stream (%d %s): written %d/%d bytes (errno %d)", to->conn->rem.chan.sock, to->io_class ? to->io_class->name : "(null)", n, len, ERRNO));
@@ -1000,7 +1000,7 @@ static void write_stream (struct stream *from, struct stream *to)
 	if (n > 0)
 		io_inc_tail (&from->io, n);
 	else if (n == -1 && (ERRNO == EINTR || ERRNO == EWOULDBLOCK))
-		n = n;											/*Ignore EINTR and EAGAIN */
+		n = n;											/*Ignore EINTR and EAGAIN*/
 	else if (!(to->flags & FLAG_DONT_CLOSE))
 		_shttpd_stop_stream (to);
 }
@@ -1016,7 +1016,7 @@ static void connection_desctructor (struct llhead *lp)
 	if (c->request != NULL && c->ctx->access_log != NULL)
 		_shttpd_log_access (c->ctx->access_log, c);
 
-	/*In inetd mode, exit if request is finished. */
+	/*In inetd mode, exit if request is finished.*/
 	if (IS_TRUE (c->ctx, OPT_INETD))
 		exit (0);
 
@@ -1026,7 +1026,7 @@ static void connection_desctructor (struct llhead *lp)
 	/*
 	 * Check the "Connection: " header before we free c->request
 	 * If it its 'keep-alive', then do not close the connection
-	 */
+	*/
 	do_close = (c->ch.connection.v_vec.len >= vec.len && !_shttpd_strncasecmp (vec.ptr, c->ch.connection.v_vec.ptr, vec.len)) || (c->major_version < 1 || (c->major_version >= 1 && c->minor_version < 1));
 
 	if (c->request)
@@ -1034,7 +1034,7 @@ static void connection_desctructor (struct llhead *lp)
 	if (c->uri)
 		free (c->uri);
 
-	/*Keep the connection open only if we have Content-Length set */
+	/*Keep the connection open only if we have Content-Length set*/
 	if (!do_close && c->loc.content_len > 0)
 	{
 		c->loc.io_class = NULL;
@@ -1097,18 +1097,18 @@ static void add_to_set (int fd, fd_set * set, int *max_fd)
 
 static void process_connection (struct conn *c, int remote_ready, int local_ready)
 {
-	/*Read from remote end if it is ready */
+	/*Read from remote end if it is ready*/
 	if (remote_ready && io_space_len (&c->rem.io))
 		read_stream (&c->rem);
 
-	/*If the request is not parsed yet, do so */
+	/*If the request is not parsed yet, do so*/
 	if (!(c->rem.flags & FLAG_HEADERS_PARSED))
 		parse_http_request (c);
 
 	DBG (("loc: %d [%.*s]", (int) io_data_len (&c->loc.io), (int) io_data_len (&c->loc.io), io_data (&c->loc.io)));
 	DBG (("rem: %d [%.*s]", (int) io_data_len (&c->rem.io), (int) io_data_len (&c->rem.io), io_data (&c->rem.io)));
 
-	/*Read from the local end if it is ready */
+	/*Read from the local end if it is ready*/
 	if (local_ready && io_space_len (&c->loc.io))
 		read_stream (&c->loc);
 
@@ -1118,7 +1118,7 @@ static void process_connection (struct conn *c, int remote_ready, int local_read
 	if (io_data_len (&c->loc.io) > 0 && c->rem.io_class != NULL)
 		write_stream (&c->loc, &c->rem);
 
-	/*Check whether we should close this connection */
+	/*Check whether we should close this connection*/
 	if ((_shttpd_current_time > c->expire_time) || (c->rem.flags & FLAG_CLOSED) || ((c->loc.flags & FLAG_CLOSED) && !io_data_len (&c->loc.io)))
 		connection_desctructor (&c->link);
 }
@@ -1138,7 +1138,7 @@ static void handle_connected_socket (struct shttpd_ctx *ctx, struct usa *sap, in
 		(void) closesocket (sock);
 	}
 	else
-#endif /*!_WIN32 */
+#endif /*!_WIN32*/
 	if (!is_allowed (ctx, sap))
 	{
 		_shttpd_elog (E_LOG, NULL, "%s is not allowed to connect", inet_ntoa (sap->u.sin.sin_addr));
@@ -1162,7 +1162,7 @@ static int do_select (int max_fd, fd_set * read_set, fd_set * write_set, int mil
 	tv.tv_sec = milliseconds / 1000;
 	tv.tv_usec = (milliseconds % 1000) * 1000;
 
-	/*Check IO readiness */
+	/*Check IO readiness*/
 	if ((n = select (max_fd + 1, read_set, write_set, NULL, &tv)) < 0)
 	{
 #ifdef _WIN32
@@ -1171,7 +1171,7 @@ static int do_select (int max_fd, fd_set * read_set, fd_set * write_set, int mil
 		 * select() returns "Invalid parameter" error
 		 * (at least on my Windows XP Pro). So in this case,
 		 * we sleep here.
-		 */
+		*/
 		Sleep (milliseconds);
 #endif /*_WIN32*/
 		DBG (("select: %d", ERRNO));
@@ -1186,15 +1186,15 @@ static int multiplex_worker_sockets (const struct worker *worker, int *max_fd, f
 	struct conn *c;
 	int nowait = FALSE;
 
-	/*Add control socket */
+	/*Add control socket*/
 	add_to_set (worker->ctl[0], read_set, max_fd);
 
-	/*Multiplex streams */
+	/*Multiplex streams*/
 	LL_FOREACH (&worker->connections, lp)
 	{
 		c = LL_ENTRY (lp, struct conn, link);
 
-		/*If there is a space in remote IO, check remote socket */
+		/*If there is a space in remote IO, check remote socket*/
 		if (io_space_len (&c->rem.io))
 			add_to_set (c->rem.chan.fd, read_set, max_fd);
 
@@ -1202,28 +1202,28 @@ static int multiplex_worker_sockets (const struct worker *worker, int *max_fd, f
 		/*
 		 * If there is a space in local IO, and local endpoint is
 		 * CGI, check local socket for read availability
-		 */
+		*/
 		if (io_space_len (&c->loc.io) && (c->loc.flags & FLAG_R) && c->loc.io_class == &_shttpd_io_cgi)
 			add_to_set (c->loc.chan.fd, read_set, max_fd);
 
 		/*
 		 * If there is some data read from remote socket, and
 		 * local endpoint is CGI, check local for write availability
-		 */
+		*/
 		if (io_data_len (&c->rem.io) && (c->loc.flags & FLAG_W) && c->loc.io_class == &_shttpd_io_cgi)
 			add_to_set (c->loc.chan.fd, write_set, max_fd);
-#endif /*NO_CGI */
+#endif /*NO_CGI*/
 
 		/*
 		 * If there is some data read from local endpoint, check the
 		 * remote socket for write availability
-		 */
+		*/
 		if (io_data_len (&c->loc.io) && !(c->loc.flags & FLAG_SUSPEND))
 			add_to_set (c->rem.chan.fd, write_set, max_fd);
 
 		/*
 		 * Set select wait interval to zero if FLAG_ALWAYS_READY set
-		 */
+		*/
 		if (io_space_len (&c->loc.io) && (c->loc.flags & FLAG_R) && (c->loc.flags & FLAG_ALWAYS_READY))
 			nowait = TRUE;
 
@@ -1240,7 +1240,7 @@ int shttpd_join (struct shttpd_ctx *ctx, fd_set * read_set, fd_set * write_set, 
 	struct listener *l;
 	int nowait = FALSE;
 
-	/*Add listening sockets to the read set */
+	/*Add listening sockets to the read set*/
 	LL_FOREACH (&ctx->listeners, lp)
 	{
 		l = LL_ENTRY (lp, struct listener, link);
@@ -1260,7 +1260,7 @@ static void process_worker_sockets (struct worker *worker, fd_set * read_set)
 	int cmd, skt[2], sock = worker->ctl[0];
 	struct conn *c;
 
-	/*Check if new socket is passed to us over the control socket */
+	/*Check if new socket is passed to us over the control socket*/
 	if (FD_ISSET (worker->ctl[0], read_set))
 		while (recv (sock, (void *) &cmd, sizeof (cmd), 0) == sizeof (cmd))
 			switch (cmd)
@@ -1278,14 +1278,14 @@ static void process_worker_sockets (struct worker *worker, fd_set * read_set)
 				break;
 			}
 
-	/*Process all connections */
+	/*Process all connections*/
 	LL_FOREACH_SAFE (&worker->connections, lp, tmp)
 	{
 		c = LL_ENTRY (lp, struct conn, link);
 		process_connection (c, FD_ISSET (c->rem.chan.sock, read_set), c->loc.io_class != NULL && ((c->loc.flags & FLAG_ALWAYS_READY)
 #if !defined(NO_CGI)
 				|| (c->loc.io_class == &_shttpd_io_cgi && FD_ISSET (c->loc.chan.fd, read_set))
-#endif /*NO_CGI */
+#endif /*NO_CGI*/
 			));
 	}
 }
@@ -1311,7 +1311,7 @@ void shttpd_poll (struct shttpd_ctx *ctx, int milliseconds)
 	if (do_select (max_fd, &read_set, &write_set, milliseconds) < 0)
 		return;;
 
-	/*Check for incoming connections on listener sockets */
+	/*Check for incoming connections on listener sockets*/
 	LL_FOREACH (&ctx->listeners, lp)
 	{
 		l = LL_ENTRY (lp, struct listener, link);
@@ -1343,7 +1343,7 @@ void shttpd_fini (struct shttpd_ctx *ctx)
 	free_list (&ctx->listeners, listener_destructor);
 #if !defined(NO_SSI)
 	free_list (&ctx->ssi_funcs, _shttpd_ssi_func_destructor);
-#endif /*!NO_SSI */
+#endif /*!NO_SSI*/
 
 	for (i = 0; i < NELEMS (ctx->options); i++)
 		if (ctx->options[i] != NULL)
@@ -1354,7 +1354,7 @@ void shttpd_fini (struct shttpd_ctx *ctx)
 	if (ctx->error_log)
 		(void) fclose (ctx->error_log);
 
-	/*TODO: free SSL context */
+	/*TODO: free SSL context*/
 
 	free (ctx);
 }
@@ -1379,13 +1379,13 @@ int shttpd_socketpair (int sp[2])
 	if ((sock = socket (AF_INET, SOCK_STREAM, 0)) != -1 && !bind (sock, (struct sockaddr *) &sa, len) && !listen (sock, 1) && !getsockname (sock, (struct sockaddr *) &sa, &len) && (sp[0] = socket (AF_INET, SOCK_STREAM, 6)) != -1 && !connect (sp[0], (struct sockaddr *) &sa, len) && (sp[1] = accept (sock, (struct sockaddr *) &sa, &len)) != -1)
 	{
 
-		/*Success */
+		/*Success*/
 		ret = 0;
 	}
 	else
 	{
 
-		/*Failure, close descriptors */
+		/*Failure, close descriptors*/
 		if (sp[0] != -1)
 			(void) closesocket (sp[0]);
 		if (sp[1] != -1)
@@ -1411,7 +1411,7 @@ static int isbyte (int n)
 
 static int set_inetd (struct shttpd_ctx *ctx, const char *flag)
 {
-	ctx = NULL;										/*Unused */
+	ctx = NULL;										/*Unused*/
 
 	if (_shttpd_is_true (flag))
 	{
@@ -1427,7 +1427,7 @@ static int set_uid (struct shttpd_ctx *ctx, const char *uid)
 {
 	struct passwd *pw;
 
-	ctx = NULL;										/*Unused */
+	ctx = NULL;										/*Unused*/
 
 #if !defined(_WIN32)
 	if ((pw = getpwnam (uid)) == NULL)
@@ -1436,7 +1436,7 @@ static int set_uid (struct shttpd_ctx *ctx, const char *uid)
 		_shttpd_elog (E_FATAL, NULL, "%s: setgid(%s): %s", __func__, uid, strerror (errno));
 	else if (setuid (pw->pw_uid) == -1)
 		_shttpd_elog (E_FATAL, NULL, "%s: setuid(%s): %s", __func__, uid, strerror (errno));
-#endif /*!_WIN32 */
+#endif /*!_WIN32*/
 	return (TRUE);
 }
 
@@ -1446,7 +1446,7 @@ static int set_acl (struct shttpd_ctx *ctx, const char *s)
 	char flag;
 	int len, a, b, c, d, n, mask;
 
-	/*Delete the old ACLs if any */
+	/*Delete the old ACLs if any*/
 	free_list (&ctx->acl, acl_destructor);
 
 	FOR_EACH_WORD_IN_LIST (s, len)
@@ -1472,7 +1472,7 @@ static int set_acl (struct shttpd_ctx *ctx, const char *s)
 		}
 		else if (sscanf (s + n, "/%d", &mask) == 0)
 		{
-			/*Do nothing, no mask specified */
+			/*Do nothing, no mask specified*/
 		}
 		else if (mask < 0 || mask > 32)
 		{
@@ -1499,7 +1499,7 @@ static int set_ssl (struct shttpd_ctx *ctx, const char *pem)
 	struct ssl_func *fp;
 	int retval = FALSE;
 
-	/*Load SSL library dynamically */
+	/*Load SSL library dynamically*/
 	if ((lib = dlopen (SSL_LIB, RTLD_LAZY)) == NULL)
 	{
 		_shttpd_elog (E_LOG, NULL, "set_ssl: cannot load %s", SSL_LIB);
@@ -1513,7 +1513,7 @@ static int set_ssl (struct shttpd_ctx *ctx, const char *pem)
 			return (FALSE);
 		}
 
-	/*Initialize SSL crap */
+	/*Initialize SSL crap*/
 	SSL_library_init ();
 
 	if ((CTX = SSL_CTX_new (SSLv23_server_method ())) == NULL)
@@ -1529,7 +1529,7 @@ static int set_ssl (struct shttpd_ctx *ctx, const char *pem)
 
 	return (retval);
 }
-#endif /*NO_SSL */
+#endif /*NO_SSL*/
 
 static int open_log_file (FILE ** fpp, const char *path)
 {
@@ -1629,7 +1629,7 @@ static int set_workers (struct shttpd_ctx *ctx, const char *value)
 	if (new_num == 1)
 	{
 		if (old_num > 1)
-			/*Stop old threads */
+			/*Stop old threads*/
 			LL_FOREACH_SAFE (&ctx->workers, lp, tmp)
 		{
 			worker = LL_ENTRY (lp, struct worker, link);
@@ -1641,7 +1641,7 @@ static int set_workers (struct shttpd_ctx *ctx, const char *value)
 	}
 	else
 	{
-		/*FIXME: we cannot here reduce the number of threads */
+		/*FIXME: we cannot here reduce the number of threads*/
 		while (new_num > 1 && new_num > old_num)
 		{
 			worker = add_worker (ctx);
@@ -1652,21 +1652,21 @@ static int set_workers (struct shttpd_ctx *ctx, const char *value)
 
 	return (TRUE);
 }
-#endif /*NO_THREADS */
+#endif /*NO_THREADS*/
 
 static const struct opt
 {
-	int index;										/*Index in shttpd_ctx */
-	const char *name;							/*Option name in config file */
-	const char *description;			/*Description */
-	const char *default_value;		/*Default option value */
+	int index;										/*Index in shttpd_ctx*/
+	const char *name;							/*Option name in config file*/
+	const char *description;			/*Description*/
+	const char *default_value;		/*Default option value*/
 	int (*setter) (struct shttpd_ctx *, const char *);
 } known_options[] = {
 	{OPT_ROOT, "root", "\tWeb root directory", ".", NULL},
 	{OPT_INDEX_FILES, "index_files", "Index files", INDEX_FILES, NULL},
 #ifndef NO_SSL
 	{OPT_SSL_CERTIFICATE, "ssl_cert", "SSL certificate file", NULL, set_ssl},
-#endif /*NO_SSL */
+#endif /*NO_SSL*/
 	{OPT_PORTS, "ports", "Listening ports", LISTENING_PORTS, set_ports},
 	{OPT_DIR_LIST, "dir_list", "Directory listing", "yes", NULL},
 	{OPT_CFG_URI, "cfg_uri", "Config uri", NULL, set_cfg_uri},
@@ -1675,13 +1675,13 @@ static const struct opt
 	{OPT_CGI_EXTENSIONS, "cgi_ext", "CGI extensions", CGI_EXT, NULL},
 	{OPT_CGI_INTERPRETER, "cgi_interp", "CGI interpreter", NULL, NULL},
 	{OPT_CGI_ENVIRONMENT, "cgi_env", "Additional CGI env vars", NULL, NULL},
-#endif /*NO_CGI */
+#endif /*NO_CGI*/
 	{OPT_SSI_EXTENSIONS, "ssi_ext", "SSI extensions", SSI_EXT, NULL},
 #ifndef NO_AUTH
 	{OPT_AUTH_REALM, "auth_realm", "Authentication domain name", REALM, NULL},
 	{OPT_AUTH_GPASSWD, "auth_gpass", "Global passwords file", NULL, NULL},
 	{OPT_AUTH_PUT, "auth_PUT", "PUT,DELETE auth file", NULL, NULL},
-#endif /*!NO_AUTH */
+#endif /*!NO_AUTH*/
 #ifdef _WIN32
 	{OPT_SERVICE, "service", "Manage WinNNT service (install" "|uninstall)", NULL, _shttpd_set_nt_service},
 	{OPT_HIDE, "systray", "Hide console, show icon on systray",
@@ -1697,7 +1697,7 @@ static const struct opt
 	{OPT_ACL, "acl", "\tAllow/deny IP addresses/subnets", NULL, set_acl},
 #if !defined(NO_THREADS)
 	{OPT_THREADS, "threads", "Number of worker threads", "1", set_workers},
-#endif /*!NO_THREADS */
+#endif /*!NO_THREADS*/
 	{-1, NULL, NULL, NULL, NULL}
 };
 
@@ -1719,15 +1719,15 @@ int shttpd_set_option (struct shttpd_ctx *ctx, const char *opt, const char *val)
 	const struct opt *o = find_opt (opt);
 	int retval = TRUE;
 
-	/*Call option setter first, so it can use both new and old values */
+	/*Call option setter first, so it can use both new and old values*/
 	if (o->setter != NULL)
 		retval = o->setter (ctx, val);
 
-	/*Free old value if any */
+	/*Free old value if any*/
 	if (ctx->options[o->index] != NULL)
 		free (ctx->options[o->index]);
 
-	/*Set new option value */
+	/*Set new option value*/
 	ctx->options[o->index] = val ? _shttpd_strdup (val) : NULL;
 
 	return (retval);
@@ -1777,7 +1777,7 @@ void _shttpd_usage (const char *prog)
 
 #if !defined(NO_AUTH)
 	fprintf (stderr, "  -A <htpasswd_file> <realm> <user> <passwd>\n");
-#endif /*NO_AUTH */
+#endif /*NO_AUTH*/
 
 	for (o = known_options; o->name != NULL; o++)
 	{
@@ -1807,24 +1807,24 @@ static void process_command_line_arguments (struct shttpd_ctx *ctx, char *argv[]
 	FILE *fp;
 	size_t i, line_no = 0;
 
-	/*First find out, which config file to open */
+	/*First find out, which config file to open*/
 	for (i = 1; argv[i] != NULL && argv[i][0] == '-'; i += 2)
 		if (argv[i + 1] == NULL)
 			_shttpd_usage (argv[0]);
 
 	if (argv[i] != NULL && argv[i + 1] != NULL)
 	{
-		/*More than one non-option arguments are given w */
+		/*More than one non-option arguments are given w*/
 		_shttpd_usage (argv[0]);
 	}
 	else if (argv[i] != NULL)
 	{
-		/*Just one non-option argument is given, this is config file */
+		/*Just one non-option argument is given, this is config file*/
 		config_file = argv[i];
 	}
 	else
 	{
-		/*No config file specified. Look for one where shttpd lives */
+		/*No config file specified. Look for one where shttpd lives*/
 		if ((p = strrchr (argv[0], DIRSEP)) != 0)
 		{
 			_shttpd_snprintf (path, sizeof (path), "%.*s%s", p - argv[0] + 1, argv[0], config_file);
@@ -1834,7 +1834,7 @@ static void process_command_line_arguments (struct shttpd_ctx *ctx, char *argv[]
 
 	fp = fopen (config_file, "r");
 
-	/*If config file was set in command line and open failed, exit */
+	/*If config file was set in command line and open failed, exit*/
 	if (fp == NULL && argv[i] != NULL)
 		_shttpd_elog (E_FATAL, NULL, "cannot open config file %s: %s", config_file, strerror (errno));
 
@@ -1843,13 +1843,13 @@ static void process_command_line_arguments (struct shttpd_ctx *ctx, char *argv[]
 
 		_shttpd_elog (E_LOG, NULL, "Loading config file %s", config_file);
 
-		/*Loop over the lines in config file */
+		/*Loop over the lines in config file*/
 		while (fgets (line, sizeof (line), fp) != NULL)
 		{
 
 			line_no++;
 
-			/*Ignore empty lines and comments */
+			/*Ignore empty lines and comments*/
 			if (line[0] == '#' || line[0] == '\n')
 				continue;
 
@@ -1862,7 +1862,7 @@ static void process_command_line_arguments (struct shttpd_ctx *ctx, char *argv[]
 		(void) fclose (fp);
 	}
 
-	/*Now pass through the command line options */
+	/*Now pass through the command line options*/
 	for (i = 1; argv[i] != NULL && argv[i][0] == '-'; i += 2)
 		set_opt (ctx, &argv[i][1], argv[i + 1]);
 }
@@ -1883,15 +1883,15 @@ struct shttpd_ctx *shttpd_init (int argc, char *argv[])
 	LL_INIT (&ctx->listeners);
 	LL_INIT (&ctx->workers);
 
-	/*Initialize options. First pass: set default option values */
+	/*Initialize options. First pass: set default option values*/
 	for (o = known_options; o->name != NULL; o++)
 		ctx->options[o->index] = o->default_value ? _shttpd_strdup (o->default_value) : NULL;
 
-	/*Second and third passes: config file and argv */
+	/*Second and third passes: config file and argv*/
 	if (argc > 0 && argv != NULL)
 		process_command_line_arguments (ctx, argv);
 
-	/*Call setter functions */
+	/*Call setter functions*/
 	for (o = known_options; o->name != NULL; o++)
 		if (o->setter && ctx->options[o->index] != NULL)
 			if (o->setter (ctx, ctx->options[o->index]) == FALSE)

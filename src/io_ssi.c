@@ -13,8 +13,8 @@
 
 #if !defined(NO_SSI)
 
-#define	CMDBUFSIZ	512						/*SSI command buffer size */
-#define	NEST_MAX	6							/*Maximum nesting level */
+#define	CMDBUFSIZ	512						/*SSI command buffer size*/
+#define	NEST_MAX	6							/*Maximum nesting level*/
 
 struct ssi_func
 {
@@ -26,26 +26,26 @@ struct ssi_func
 
 struct ssi_inc
 {
-	int state;										/*Buffering state */
-	int cond;											/*Conditional state */
-	FILE *fp;											/*Icluded file stream */
-	char buf[CMDBUFSIZ];					/*SSI command buffer */
-	size_t nbuf;									/*Bytes in a command buffer */
-	FILE *pipe;										/*#exec stream */
-	struct ssi_func func;					/*#call function */
+	int state;										/*Buffering state*/
+	int cond;											/*Conditional state*/
+	FILE *fp;											/*Icluded file stream*/
+	char buf[CMDBUFSIZ];					/*SSI command buffer*/
+	size_t nbuf;									/*Bytes in a command buffer*/
+	FILE *pipe;										/*#exec stream*/
+	struct ssi_func func;					/*#call function*/
 };
 
 struct ssi
 {
-	struct conn *conn;						/*Connection we belong to */
-	int nest;											/*Current nesting level */
-	struct ssi_inc incs[NEST_MAX];	/*Nested includes */
+	struct conn *conn;						/*Connection we belong to*/
+	int nest;											/*Current nesting level*/
+	struct ssi_inc incs[NEST_MAX];	/*Nested includes*/
 };
 
 enum
 { SSI_PASS, SSI_BUF, SSI_EXEC, SSI_CALL };
 enum
-{ SSI_GO, SSI_STOP };						/*Conditional states */
+{ SSI_GO, SSI_STOP };						/*Conditional states*/
 
 static const struct vec st = { "<!--#", 5 };
 
@@ -94,7 +94,7 @@ static void call (struct ssi *ssi, const char *name, struct shttpd_arg *arg, cha
 	/*
 	 * SSI function may be called with parameters. These parameters
 	 * are passed as arg->in.buf, arg->in.len vector.
-	 */
+	*/
 	arg->in.buf = strchr (name, ' ');
 	if (arg->in.buf != NULL)
 	{
@@ -135,9 +135,9 @@ static void pass (struct ssi_inc *inc, void *buf, int *n)
 static int get_path (struct conn *conn, const char *src, int src_len, char *dst, int dst_len)
 {
 	static struct vec accepted[] = {
-		{"\"", 1},									/*Relative to webserver CWD */
-		{"file=\"", 6},							/*Relative to current URI */
-		{"virtual=\"", 9},					/*Relative to document root */
+		{"\"", 1},									/*Relative to webserver CWD*/
+		{"file=\"", 6},							/*Relative to current URI*/
+		{"virtual=\"", 9},					/*Relative to document root*/
 		{NULL, 0},
 	};
 	struct vec *vec;
@@ -182,7 +182,7 @@ static void do_include (struct ssi *ssi)
 
 	if (inc->cond == SSI_STOP)
 	{
-		/*Do nothing - conditional FALSE */
+		/*Do nothing - conditional FALSE*/
 	}
 	else if (ssi->nest >= (int) NELEMS (ssi->incs) - 1)
 	{
@@ -209,12 +209,12 @@ static char *trim_spaces (struct ssi_inc *inc)
 {
 	char *p = inc->buf + inc->nbuf - 2;
 
-	/*Trim spaces from the right */
+	/*Trim spaces from the right*/
 	*p-- = '\0';
 	while (isspace (*(unsigned char *) p))
 		*p-- = '\0';
 
-	/*Shift pointer to the start of attributes */
+	/*Shift pointer to the start of attributes*/
 	for (p = inc->buf; !isspace (*(unsigned char *) p); p++) ;
 	while (*p && isspace (*(unsigned char *) p))
 		p++;
@@ -305,7 +305,7 @@ static void do_exec (struct ssi *ssi, char *buf, int len, int *n)
 
 	if (inc->cond == SSI_STOP)
 	{
-		/*Do nothing - conditional FALSE */
+		/*Do nothing - conditional FALSE*/
 	}
 	else if (*p != '"' || (e = strchr (p + 1, '"')) == NULL)
 	{
@@ -403,7 +403,7 @@ again:
 			 * Restrictions:
 			 *  1. The command must fit in CMDBUFSIZ
 			 *  2. HTML comments inside the command ? Not sure about this.
-			 */
+			*/
 		case SSI_BUF:
 			if (inc->nbuf >= sizeof (inc->buf) - 1)
 			{
@@ -418,7 +418,7 @@ again:
 			{
 				inc->buf[inc->nbuf++] = ch;
 
-				/*If not SSI tag, pass it */
+				/*If not SSI tag, pass it*/
 				if (inc->nbuf <= (size_t) st.len && memcmp (inc->buf, st.ptr, inc->nbuf) != 0)
 					pass (inc, buf + n, &n);
 			}
@@ -429,7 +429,7 @@ again:
 			break;
 
 		default:
-			/*Never happens */
+			/*Never happens*/
 			abort ();
 			break;
 		}
@@ -498,4 +498,4 @@ const struct io_class _shttpd_io_ssi = {
 	close_ssi
 };
 
-#endif /*!NO_SSI */
+#endif /*!NO_SSI*/

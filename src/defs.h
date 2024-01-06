@@ -30,7 +30,7 @@
 */
 #ifdef NO_SOCKLEN_T
 typedef int socklen_t;
-#endif /*NO_SOCKLEN_T */
+#endif /*NO_SOCKLEN_T*/
 
 /*
  * For parsing. This guy represents a substring.
@@ -44,15 +44,15 @@ struct vec
 #if !defined(FALSE)
 enum
 { FALSE, TRUE };
-#endif /*!FALSE */
+#endif /*!FALSE*/
 
 enum
 { METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_DELETE, METHOD_HEAD };
 enum
-{ HDR_DATE, HDR_INT, HDR_STRING };	/*HTTP header types */
+{ HDR_DATE, HDR_INT, HDR_STRING };	/*HTTP header types*/
 enum
-{ E_FATAL = 1, E_LOG = 2 };			/*Flags for elog() function */
-typedef unsigned long big_int_t;	/*Type for Content-Length */
+{ E_FATAL = 1, E_LOG = 2 };			/*Flags for elog() function*/
+typedef unsigned long big_int_t;	/*Type for Content-Length*/
 
 /*
  * Unified socket address
@@ -110,10 +110,10 @@ struct error_handler
 
 struct http_header
 {
-	int len;											/*Header name length */
-	int type;											/*Header type */
-	size_t offset;								/*Value placeholder */
-	const char *name;							/*Header name */
+	int len;											/*Header name length*/
+	int type;											/*Header type*/
+	size_t offset;								/*Value placeholder*/
+	const char *name;							/*Header name*/
 };
 
 /*
@@ -121,19 +121,19 @@ struct http_header
 */
 struct headers
 {
-	union variant cl;							/*Content-Length: */
-	union variant ct;							/*Content-Type: */
-	union variant connection;			/*Connection: */
-	union variant ims;						/*If-Modified-Since: */
-	union variant user;						/*Remote user name */
-	union variant auth;						/*Authorization */
-	union variant useragent;			/*User-Agent: */
-	union variant referer;				/*Referer: */
-	union variant cookie;					/*Cookie: */
-	union variant location;				/*Location: */
-	union variant range;					/*Range: */
-	union variant status;					/*Status: */
-	union variant transenc;				/*Transfer-Encoding: */
+	union variant cl;							/*Content-Length:*/
+	union variant ct;							/*Content-Type:*/
+	union variant connection;			/*Connection:*/
+	union variant ims;						/*If-Modified-Since:*/
+	union variant user;						/*Remote user name*/
+	union variant auth;						/*Authorization*/
+	union variant useragent;			/*User-Agent:*/
+	union variant referer;				/*Referer:*/
+	union variant cookie;					/*Cookie:*/
+	union variant location;				/*Location:*/
+	union variant range;					/*Range:*/
+	union variant status;					/*Status:*/
+	union variant transenc;				/*Transfer-Encoding:*/
 };
 
 /*Must go after union variant definition*/
@@ -144,24 +144,24 @@ struct headers
 */
 union channel
 {
-	int fd;												/*Regular static file */
-	int sock;											/*Connected socket */
+	int fd;												/*Regular static file*/
+	int sock;											/*Connected socket*/
 	struct
 	{
-		int sock;										/*XXX important. must be first */
-		SSL *ssl;										/*shttpd_poll() assumes that */
-	} ssl;												/*SSL-ed socket */
+		int sock;										/*XXX important. must be first*/
+		SSL *ssl;										/*shttpd_poll() assumes that*/
+	} ssl;												/*SSL-ed socket*/
 	struct
 	{
 		DIR *dirp;
 		char *path;
-	} dir;												/*Opened directory */
+	} dir;												/*Opened directory*/
 	struct
 	{
-		void *state;								/*For keeping state */
-		union variant func;					/*User callback function */
-		void *data;									/*User defined parameters */
-	} emb;												/*Embedded, user callback */
+		void *state;								/*For keeping state*/
+		union variant func;					/*User callback function*/
+		void *data;									/*User defined parameters*/
+	} emb;												/*Embedded, user callback*/
 };
 
 struct stream;
@@ -186,61 +186,61 @@ struct io_class
 struct stream
 {
 	struct conn *conn;
-	union channel chan;						/*Descriptor */
-	struct io io;									/*IO buffer */
-	const struct io_class *io_class;	/*IO class */
+	union channel chan;						/*Descriptor*/
+	struct io io;									/*IO buffer*/
+	const struct io_class *io_class;	/*IO class*/
 	int headers_len;
 	big_int_t content_len;
 	unsigned int flags;
 #define	FLAG_HEADERS_PARSED	1
 #define	FLAG_SSL_ACCEPTED	2
-#define	FLAG_R			4						/*Can read in general */
-#define	FLAG_W			8						/*Can write in general */
+#define	FLAG_R			4						/*Can read in general*/
+#define	FLAG_W			8						/*Can write in general*/
 #define	FLAG_CLOSED		16
 #define	FLAG_DONT_CLOSE		32
-#define	FLAG_ALWAYS_READY	64		/*File, dir, user_func */
+#define	FLAG_ALWAYS_READY	64		/*File, dir, user_func*/
 #define	FLAG_SUSPEND		128
 };
 
 struct worker
 {
 	struct llhead link;
-	int num_conns;								/*Num of active connections */
-	int exit_flag;								/*Ditto - exit flag */
-	int ctl[2];										/*Control socket pair */
-	struct shttpd_ctx *ctx;				/*Context reference */
-	struct llhead connections;		/*List of connections */
+	int num_conns;								/*Num of active connections*/
+	int exit_flag;								/*Ditto - exit flag*/
+	int ctl[2];										/*Control socket pair*/
+	struct shttpd_ctx *ctx;				/*Context reference*/
+	struct llhead connections;		/*List of connections*/
 };
 
 struct conn
 {
-	struct llhead link;						/*Connections chain */
-	struct worker *worker;				/*Worker this conn belongs to */
-	struct shttpd_ctx *ctx;				/*Context this conn belongs to */
-	struct usa sa;								/*Remote socket address */
-	time_t birth_time;						/*Creation time */
-	time_t expire_time;						/*Expiration time */
+	struct llhead link;						/*Connections chain*/
+	struct worker *worker;				/*Worker this conn belongs to*/
+	struct shttpd_ctx *ctx;				/*Context this conn belongs to*/
+	struct usa sa;								/*Remote socket address*/
+	time_t birth_time;						/*Creation time*/
+	time_t expire_time;						/*Expiration time*/
 
-	int loc_port;									/*Local port */
-	int status;										/*Reply status code */
-	int method;										/*Request method */
-	char *uri;										/*Decoded URI */
-	unsigned long major_version;	/*Major HTTP version number */
-	unsigned long minor_version;	/*Minor HTTP version number */
-	char *request;								/*Request line */
-	char *headers;								/*Request headers */
-	char *query;									/*QUERY_STRING part of the URI */
-	char *path_info;							/*PATH_INFO thing */
-	struct vec mime_type;					/*Mime type */
+	int loc_port;									/*Local port*/
+	int status;										/*Reply status code*/
+	int method;										/*Request method*/
+	char *uri;										/*Decoded URI*/
+	unsigned long major_version;	/*Major HTTP version number*/
+	unsigned long minor_version;	/*Minor HTTP version number*/
+	char *request;								/*Request line*/
+	char *headers;								/*Request headers*/
+	char *query;									/*QUERY_STRING part of the URI*/
+	char *path_info;							/*PATH_INFO thing*/
+	struct vec mime_type;					/*Mime type*/
 
-	struct headers ch;						/*Parsed client headers */
+	struct headers ch;						/*Parsed client headers*/
 
-	struct stream loc;						/*Local stream */
-	struct stream rem;						/*Remote stream */
+	struct stream loc;						/*Local stream*/
+	struct stream rem;						/*Remote stream*/
 
 #if !defined(NO_SSI)
-	void *ssi;										/*SSI descriptor */
-#endif													/*NO_SSI */
+	void *ssi;										/*SSI descriptor*/
+#endif													/*NO_SSI*/
 };
 
 enum
@@ -259,19 +259,19 @@ enum
 */
 struct shttpd_ctx
 {
-	SSL_CTX *ssl_ctx;							/*SSL context */
+	SSL_CTX *ssl_ctx;							/*SSL context*/
 
-	struct llhead registered_uris;	/*User urls */
-	struct llhead error_handlers;	/*Embedded error handlers */
-	struct llhead acl;						/*Access control list */
-	struct llhead ssi_funcs;			/*SSI callback functions */
-	struct llhead listeners;			/*Listening sockets */
-	struct llhead workers;				/*Worker workers */
+	struct llhead registered_uris;	/*User urls*/
+	struct llhead error_handlers;	/*Embedded error handlers*/
+	struct llhead acl;						/*Access control list*/
+	struct llhead ssi_funcs;			/*SSI callback functions*/
+	struct llhead listeners;			/*Listening sockets*/
+	struct llhead workers;				/*Worker workers*/
 
-	FILE *access_log;							/*Access log stream */
-	FILE *error_log;							/*Error log stream */
+	FILE *access_log;							/*Access log stream*/
+	FILE *error_log;							/*Error log stream*/
 
-	char *options[NUM_OPTIONS];		/*Configurable options */
+	char *options[NUM_OPTIONS];		/*Configurable options*/
 #if defined(__rtems__)
 	rtems_id mutex;
 #endif													/*_WIN32*/
@@ -280,9 +280,9 @@ struct shttpd_ctx
 struct listener
 {
 	struct llhead link;
-	struct shttpd_ctx *ctx;				/*Context that socket belongs */
-	int sock;											/*Listening socket */
-	int is_ssl;										/*Should be SSL-ed */
+	struct shttpd_ctx *ctx;				/*Context that socket belongs*/
+	int sock;											/*Listening socket*/
+	int is_ssl;										/*Should be SSL-ed*/
 };
 
 /*Types of messages that could be sent over the control socket*/
@@ -312,16 +312,16 @@ enum
 struct acl
 {
 	struct llhead link;
-	uint32_t ip;									/*IP, in network byte order */
-	uint32_t mask;								/*Also in network byte order */
-	int flag;											/*Either '+' or '-' */
+	uint32_t ip;									/*IP, in network byte order*/
+	uint32_t mask;								/*Also in network byte order*/
+	int flag;											/*Either '+' or '-'*/
 };
 
 /*
  * shttpd.c
 */
-extern time_t _shttpd_current_time;	/*Current UTC time */
-extern int _shttpd_tz_offset;		/*Offset from GMT time zone */
+extern time_t _shttpd_current_time;	/*Current UTC time*/
+extern int _shttpd_tz_offset;		/*Offset from GMT time zone*/
 extern const struct vec _shttpd_known_http_methods[];
 
 extern void _shttpd_stop_stream (struct stream *stream);
@@ -410,4 +410,4 @@ extern void _shttpd_do_cgi (struct conn *c);
 #define CGI_REPLY	"HTTP/1.1     OK\r\n"
 #define	CGI_REPLY_LEN	(sizeof(CGI_REPLY) - 1)
 
-#endif /*DEFS_HEADER_DEFINED */
+#endif /*DEFS_HEADER_DEFINED*/

@@ -25,7 +25,7 @@
 #include "pthread.h"
 #define	_beginthread(a, b, c) do { pthread_t tid; \
 	pthread_create(&tid, NULL, (void *(*)(void *))a, c); } while (0)
-#endif /*!NO_THREADS */
+#endif /*!NO_THREADS*/
 
 #define	SSL_LIB				"libssl.so"
 #define	DIRSEP				'/'

@@ -60,7 +60,7 @@ int _shttpd_set_non_blocking_mode (int fd)
 	}
 	else
 	{
-		ret = 0;										/*Success */
+		ret = 0;										/*Success*/
 	}
 
 	return (ret);
@@ -73,7 +73,7 @@ int _shttpd_spawn_process (struct conn *c, const char *prog, char *envblk, char 
 	pid_t pid;
 	const char *p, *interp = c->ctx->options[OPT_CGI_INTERPRETER];
 
-	envblk = NULL;								/*unused */
+	envblk = NULL;								/*unused*/
 
 	if ((pid = vfork ()) == -1)
 	{
@@ -85,14 +85,14 @@ int _shttpd_spawn_process (struct conn *c, const char *prog, char *envblk, char 
 	else if (pid == 0)
 	{
 
-		/*Child */
+		/*Child*/
 
 		(void) chdir (dir);
 		(void) dup2 (sock, 0);
 		(void) dup2 (sock, 1);
 		(void) closesocket (sock);
 
-		/*If error file is specified, send errors there */
+		/*If error file is specified, send errors there*/
 		if (c->ctx->error_log)
 			(void) dup2 (fileno (c->ctx->error_log), 2);
 
@@ -101,7 +101,7 @@ int _shttpd_spawn_process (struct conn *c, const char *prog, char *envblk, char 
 		else
 			p = prog;
 
-		/*Execute CGI program */
+		/*Execute CGI program*/
 		if (interp == NULL)
 		{
 			(void) execle (p, p, NULL, envp);
@@ -119,11 +119,11 @@ int _shttpd_spawn_process (struct conn *c, const char *prog, char *envblk, char 
 	else
 	{
 
-		/*Parent */
+		/*Parent*/
 		ret = 0;
 		(void) closesocket (sock);
 	}
 
 	return (ret);
 }
-#endif /*!NO_CGI */
+#endif /*!NO_CGI*/

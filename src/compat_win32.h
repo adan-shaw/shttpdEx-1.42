@@ -27,8 +27,8 @@
 #else	/*_WIN32_WCE*/
 
 /*Windows CE-specific definitions*/
-#define NO_CGI									/*WinCE has no pipes */
-#define NO_GUI									/*temporarily until it is fixed */
+#define NO_CGI									/*WinCE has no pipes*/
+#define NO_GUI									/*temporarily until it is fixed*/
 #pragma comment(lib,"ws2")
 /*WinCE has both Unicode and ANSI versions of GetProcAddress*/
 #undef GetProcAddress
@@ -57,7 +57,7 @@
 #include <stdint.h>
 #endif /*__LCC__*/
 
-#ifdef _MSC_VER									/*MinGW already has these */
+#ifdef _MSC_VER									/*MinGW already has these*/
 typedef unsigned int uint32_t;
 typedef unsigned short uint16_t;
 typedef __int64 uint64_t;

@@ -1,0 +1,6 @@
+example
+shttpd
+.vscode
+*.so
+*.o
+*.a

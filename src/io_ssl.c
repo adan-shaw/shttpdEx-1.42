@@ -81,4 +81,4 @@ const struct io_class _shttpd_io_ssl = {
 	write_ssl,
 	close_ssl
 };
-#endif /*!NO_SSL */
+#endif /*!NO_SSL*/

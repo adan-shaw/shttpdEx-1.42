@@ -10,7 +10,7 @@
 #define	snprintf			_snprintf
 
 #ifndef _WIN32_WCE
-#ifdef _MSC_VER									/*pragmas not valid on MinGW */
+#ifdef _MSC_VER									/*pragmas not valid on MinGW*/
 #endif /*_MSC_VER*/
 #define ALIAS_URI "/my_c"
 #define ALIAS_DIR "c:\\"
@@ -31,7 +31,7 @@
 #define ALIAS_DIR "/etc/"
 #endif
 
-#ifndef _WIN32_WCE							/*Some ANSI #includes are not available on Windows CE */
+#ifndef _WIN32_WCE							/*Some ANSI #includes are not available on Windows CE*/
 #include <time.h>
 #include <errno.h>
 #include <signal.h>
@@ -53,7 +53,7 @@
 */
 static void show_index (struct shttpd_arg *arg)
 {
-	int *p = arg->user_data;			/*integer passed to us */
+	int *p = arg->user_data;			/*integer passed to us*/
 	char value[20];
 	const char *host, *request_method, *query_string, *request_uri;
 
@@ -61,11 +61,11 @@ static void show_index (struct shttpd_arg *arg)
 	request_uri = shttpd_get_env (arg, "REQUEST_URI");
 	query_string = shttpd_get_env (arg, "QUERY_STRING");
 
-	/*Change the value of integer variable */
+	/*Change the value of integer variable*/
 	value[0] = '\0';
 	if (!strcmp (request_method, "POST"))
 	{
-		/*If not all data is POSTed, wait for the rest */
+		/*If not all data is POSTed, wait for the rest*/
 		if (arg->flags & SHTTPD_MORE_POST_DATA)
 			return;
 		(void) shttpd_get_var ("name1", arg->in.buf, arg->in.len, value, sizeof (value));
@@ -84,7 +84,7 @@ static void show_index (struct shttpd_arg *arg)
 		 * page using GET method. This prevents the possibility of
 		 * the user accidentally resubmitting the form when using
 		 * Refresh or Back commands in the browser.
-		 */
+		*/
 		if (!strcmp (request_method, "POST"))
 		{
 			shttpd_printf (arg, "HTTP/1.1 303 See Other\r\n" "Location: %s\r\n\r\n", request_uri);
@@ -128,12 +128,12 @@ static void show_post (struct shttpd_arg *arg)
 	const char *s, *path = "uploaded.txt";
 	struct state
 	{
-		size_t cl;									/*Content-Length */
-		size_t nread;								/*Number of bytes read */
+		size_t cl;									/*Content-Length*/
+		size_t nread;								/*Number of bytes read*/
 		FILE *fp;
 	} *state;
 
-	/*If the connection was broken prematurely, cleanup */
+	/*If the connection was broken prematurely, cleanup*/
 	if (arg->flags & SHTTPD_CONNECTION_ERROR && arg->state)
 	{
 		(void) fclose (((struct state *) arg->state)->fp);
@@ -146,7 +146,7 @@ static void show_post (struct shttpd_arg *arg)
 	}
 	else if (arg->state == NULL)
 	{
-		/*New request. Allocate a state structure, and open a file */
+		/*New request. Allocate a state structure, and open a file*/
 		arg->state = state = calloc (1, sizeof (*state));
 		state->cl = strtoul (s, NULL, 10);
 		state->fp = fopen (path, "wb+");
@@ -159,14 +159,14 @@ static void show_post (struct shttpd_arg *arg)
 		/*
 		 * Write the POST data to a file. We do not do any URL
 		 * decoding here. File will contain form-urlencoded stuff.
-		 */
+		*/
 		(void) fwrite (arg->in.buf, arg->in.len, 1, state->fp);
 		state->nread += arg->in.len;
 
-		/*Tell SHTTPD we have processed all data */
+		/*Tell SHTTPD we have processed all data*/
 		arg->in.num_bytes = arg->in.len;
 
-		/*Data stream finished? Close the file, and free the state */
+		/*Data stream finished? Close the file, and free the state*/
 		if (state->nread >= state->cl)
 		{
 			shttpd_printf (arg, "Written %d bytes to %s", state->nread, path);
@@ -213,7 +213,7 @@ static void show_huge (struct shttpd_arg *arg)
 		state++;
 
 		if (state > 1024 * 1024)
-		{														/*Output 1Mb Kb of data */
+		{														/*Output 1Mb Kb of data*/
 			arg->flags |= SHTTPD_END_OF_OUTPUT;
 			break;
 		}
@@ -263,7 +263,7 @@ static void ssi_test_true (struct shttpd_arg *arg)
 */
 static void ssi_test_false (struct shttpd_arg *arg)
 {
-	/*Do not set SHTTPD_SSI_EVAL_TRUE flag, that means FALSE */
+	/*Do not set SHTTPD_SSI_EVAL_TRUE flag, that means FALSE*/
 }
 
 /*
@@ -290,7 +290,7 @@ static void signal_handler (int sig_num)
 	case SIGCHLD:
 		while (waitpid (-1, &sig_num, WNOHANG) > 0) ;
 		break;
-#endif /*!_WIN32 */
+#endif /*!_WIN32*/
 	default:
 		break;
 	}
@@ -301,14 +301,14 @@ int main (int argc, char *argv[])
 	int data = 1234567;
 	struct shttpd_ctx *ctx;
 
-	/*Get rid of warnings */
+	/*Get rid of warnings*/
 	argc = argc;
 	argv = argv;
 
 #ifndef _WIN32
 	signal (SIGPIPE, SIG_IGN);
 	signal (SIGCHLD, &signal_handler);
-#endif /*!_WIN32 */
+#endif /*!_WIN32*/
 
 	/*
 	 * Initialize SHTTPD context.
@@ -316,41 +316,41 @@ int main (int argc, char *argv[])
 	 * /etc/ to URL /my_etc (for UNIX). These are Apache-like aliases.
 	 * Set WWW root to current directory.
 	 * Start listening on ports 8080 and 8081
-	 */
+	*/
 	ctx = shttpd_init (argc, argv);
 	shttpd_set_option (ctx, "ssl_cert", "shttpd.pem");
 	shttpd_set_option (ctx, "aliases", ALIAS_URI "=" ALIAS_DIR);
 	shttpd_set_option (ctx, "ports", "8080,8081s");
 
-	/*Register an index page under two URIs */
+	/*Register an index page under two URIs*/
 	shttpd_register_uri (ctx, "/", &show_index, (void *) &data);
 	shttpd_register_uri (ctx, "/abc.html", &show_index, (void *) &data);
 
-	/*Register a callback on wildcard URI */
+	/*Register a callback on wildcard URI*/
 	shttpd_register_uri (ctx, "/users/*/", &show_users, NULL);
 
-	/*Show how to use password protection */
+	/*Show how to use password protection*/
 	shttpd_register_uri (ctx, "/secret", &show_secret, NULL);
 	shttpd_set_option (ctx, "protect", "/secret=passfile");
 
-	/*Show how to use stateful big data transfer */
+	/*Show how to use stateful big data transfer*/
 	shttpd_register_uri (ctx, "/huge", &show_huge, NULL);
 
-	/*Register URI for file upload */
+	/*Register URI for file upload*/
 	shttpd_register_uri (ctx, "/post", &show_post, NULL);
 
-	/*Register SSI callbacks */
+	/*Register SSI callbacks*/
 	shttpd_register_ssi_func (ctx, "true", ssi_test_true, NULL);
 	shttpd_register_ssi_func (ctx, "false", ssi_test_false, NULL);
 	shttpd_register_ssi_func (ctx, "print_stuff", ssi_print_stuff, NULL);
 
 	shttpd_handle_error (ctx, 404, show_404, NULL);
 
-	/*Serve connections infinitely until someone kills us */
+	/*Serve connections infinitely until someone kills us*/
 	for (;;)
 		shttpd_poll (ctx, 1000);
 
-	/*Probably unreached, because we will be killed by a signal */
+	/*Probably unreached, because we will be killed by a signal*/
 	shttpd_fini (ctx);
 
 	return (EXIT_SUCCESS);

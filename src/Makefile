@@ -1,10 +1,18 @@
-SRCS=		string.c shttpd.c log.c auth.c md5.c cgi.c io_ssi.c \
-		io_file.c io_socket.c io_ssl.c io_emb.c io_dir.c io_cgi.c
-HDRS=		defs.h llist.h shttpd.h std_includes.h io.h md5.h ssl.h \
-		compat_unix.h compat_win32.h compat_rtems.h config.h
+SRCS=		string.c shttpd.c log.c auth.c md5.c cgi.c io_ssi.c io_file.c io_socket.c io_ssl.c io_emb.c io_dir.c io_cgi.c
+HDRS=		defs.h llist.h shttpd.h std_includes.h io.h md5.h ssl.h compat_unix.h compat_win32.h compat_rtems.h config.h
 OBJS=		$(SRCS:%.c=%.o) compat_unix.c
 PROG=		shttpd
-CL_FLAGS=	/MD /TC /nologo /DNDEBUG /Os 	# MSVC compiler flags
+
+# MSVC compiler flags (微软编译选项)
+CL_FLAGS=	/MD /TC /nologo /DNDEBUG /Os
+
+# release
+CFLAGS= -DNDEBUG -O2
+
+# debug
+#CFLAGS= -D_DEBUG -O2 -g3
+
+
 
 # Possible flags: (in brackets are rough numbers for 'gcc -O2' on i386)
 # -DHAVE_MD5		- use system md5 library (-2kb)
@@ -30,7 +38,7 @@ CL_FLAGS=	/MD /TC /nologo /DNDEBUG /Os 	# MSVC compiler flags
 
 all:
 	@echo "make (unix|msvc|mingw|rtems)"
-	@echo 'Linux: "LIBS=-ldl make unix"'
+	@echo 'Linux: "LIBS="-ldl -lpthread" make linux"'
 	@echo 'BSD: "LIBS=-lpthread make unix"'
 	@echo 'Solaris: "LIBS="-lpthread -lnsl -lsocket" make unix"'
 
@@ -40,6 +48,10 @@ all:
 lib$(PROG).a: $(OBJS) compat_unix.o
 	$(AR) -r lib$(PROG).a $(OBJS) compat_unix.o 2>&1
 	ranlib lib$(PROG).a 2>&1
+
+linux: lib$(PROG).a
+	# for linux only
+	$(CC) $(CFLAGS) standalone.c -o $(PROG) $(LIBS) -L. -ldl -lpthread -l$(PROG)
 
 unix: lib$(PROG).a
 	$(CC) $(CFLAGS) standalone.c -o $(PROG) $(LIBS) -L. -l$(PROG)
@@ -55,14 +67,12 @@ $(PROG).lib: $(SRCS) $(HDRS) compat_win32.c
 	lib /nologo *.obj /out:$@
 
 msvc:	$(PROG).lib
-	cl $(CL_FLAGS) standalone.c /link /out:$(PROG).exe \
-	ws2_32.lib user32.lib advapi32.lib shell32.lib $(PROG).lib
+	cl $(CL_FLAGS) standalone.c /link /out:$(PROG).exe ws2_32.lib user32.lib advapi32.lib shell32.lib $(PROG).lib
 
 mingw:
 	$(CC) -c $(CFLAGS) $(SRCS) compat_win32.c
 	$(AR) -r lib$(PROG).a *.o && ranlib lib$(PROG).a 
-	$(CC) $(CFLAGS) $(SRCS) compat_win32.c standalone.c \
-		-o $(PROG) $(LIBS) -lws2_32 -lcomdlg32 -lcomctl32
+	$(CC) $(CFLAGS) $(SRCS) compat_win32.c standalone.c -o $(PROG) $(LIBS) -lws2_32 -lcomdlg32 -lcomctl32
 
 man:
 	cat shttpd.1 | tbl | groff -man -Tascii | col -b > shttpd.1.txt

@@ -103,22 +103,22 @@ static void parse_authorization_header (const struct vec *h, struct digest *dig)
 	while (p < e)
 	{
 
-		/*Skip spaces */
+		/*Skip spaces*/
 		while (p < e && (*p == ' ' || *p == ','))
 			p++;
 
-		/*Skip to "=" */
+		/*Skip to "="*/
 		for (s = p; s < e && *s != '=';)
 			s++;
 		s++;
 
-		/*Is it known keyword ? */
+		/*Is it known keyword ?*/
 		for (kw = known_auth_keywords; kw->vec.len > 0; kw++)
 			if (kw->vec.len <= s - p && !memcmp (p, kw->vec.ptr, kw->vec.len))
 				break;
 
 		if (kw->vec.len == 0)
-			v = &vec;									/*Dummy placeholder */
+			v = &vec;									/*Dummy placeholder*/
 		else
 			v = (struct vec *) ((char *) dig + kw->offset);
 
@@ -153,11 +153,11 @@ static int check_password (int method, const struct vec *ha1, const struct diges
 	char a2[32], resp[32];
 	struct vec vec_a2;
 
-	/*XXX  Due to a bug in MSIE, we do not compare the URI */
-	/*Also, we do not check for authentication timeout */
-	if (													/*strcmp(dig->uri, c->ouri) != 0 || */
+	/*XXX  Due to a bug in MSIE, we do not compare the URI*/
+	/*Also, we do not check for authentication timeout*/
+	if (													/*strcmp(dig->uri, c->ouri) != 0 ||*/
 		digest->resp.len != 32			/*||
-																   now - strtoul(dig->nonce, NULL, 10) > 3600 */ )
+																   now - strtoul(dig->nonce, NULL, 10) > 3600*/ )
 		return (0);
 
 	md5 (a2, &_shttpd_known_http_methods[method], &digest->uri, NULL);
@@ -178,7 +178,7 @@ static FILE *open_auth_file (struct shttpd_ctx *ctx, const char *path)
 
 	if (ctx->options[OPT_AUTH_GPASSWD] != NULL)
 	{
-		/*Use global passwords file */
+		/*Use global passwords file*/
 		_shttpd_snprintf (name, sizeof (name), "%s", ctx->options[OPT_AUTH_GPASSWD]);
 	}
 	else
@@ -190,7 +190,7 @@ static FILE *open_auth_file (struct shttpd_ctx *ctx, const char *path)
 		 * directory separator character first. That would be the
 		 * directory name. If directory separator character is not
 		 * found, 'e' will point to 'p'.
-		 */
+		*/
 		for (p = path, e = p + strlen (p) - 1; e > p; e--)
 			if (IS_DIRSEP_CHAR (*e))
 				break;
@@ -198,7 +198,7 @@ static FILE *open_auth_file (struct shttpd_ctx *ctx, const char *path)
 		/*
 		 * Make up the path by concatenating directory name and
 		 * .htpasswd file name.
-		 */
+		*/
 		(void) _shttpd_snprintf (name, sizeof (name), "%.*s/%s", (int) (e - p), p, HTPASSWD);
 	}
 
@@ -350,11 +350,11 @@ int _shttpd_edit_passwords (const char *fname, const char *domain, const char *u
 
 	(void) _shttpd_snprintf (tmp, sizeof (tmp), "%s.tmp", fname);
 
-	/*Create the file if does not exist */
+	/*Create the file if does not exist*/
 	if ((fp = fopen (fname, "a+")))
 		(void) fclose (fp);
 
-	/*Open the given file and temporary file */
+	/*Open the given file and temporary file*/
 	if ((fp = fopen (fname, "r")) == NULL)
 		_shttpd_elog (E_FATAL, NULL, "Cannot open %s: %s", fname, strerror (errno));
 	else if ((fp2 = fopen (tmp, "w+")) == NULL)
@@ -363,7 +363,7 @@ int _shttpd_edit_passwords (const char *fname, const char *domain, const char *u
 	p.ptr = pass;
 	p.len = strlen (pass);
 
-	/*Copy the stuff to temporary file */
+	/*Copy the stuff to temporary file*/
 	while (fgets (line, sizeof (line), fp) != NULL)
 	{
 		u.ptr = line;
@@ -387,7 +387,7 @@ int _shttpd_edit_passwords (const char *fname, const char *domain, const char *u
 		}
 	}
 
-	/*If new user, just add it */
+	/*If new user, just add it*/
 	if (found == 0)
 	{
 		u.ptr = user;
@@ -398,14 +398,14 @@ int _shttpd_edit_passwords (const char *fname, const char *domain, const char *u
 		(void) fprintf (fp2, "%s:%s:%.32s\n", user, domain, ha1);
 	}
 
-	/*Close files */
+	/*Close files*/
 	(void) fclose (fp);
 	(void) fclose (fp2);
 
-	/*Put the temp file in place of real file */
+	/*Put the temp file in place of real file*/
 	(void) _shttpd_remove (fname);
 	(void) _shttpd_rename (tmp, fname);
 
 	return (ret);
 }
-#endif /*NO_AUTH */
+#endif /*NO_AUTH*/

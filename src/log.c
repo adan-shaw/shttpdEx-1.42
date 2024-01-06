@@ -20,7 +20,7 @@ void _shttpd_elog (int flags, struct conn *c, const char *fmt, ...)
 	FILE *fp = c == NULL ? NULL : c->ctx->error_log;
 	va_list ap;
 
-	/*Print to stderr */
+	/*Print to stderr*/
 	if (c == NULL || !IS_TRUE (c->ctx, OPT_INETD))
 	{
 		va_start (ap, fmt);

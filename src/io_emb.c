@@ -36,7 +36,7 @@ static void call_user (struct conn *c, struct shttpd_arg *arg, shttpd_callback_t
 
 	io_inc_head (&c->loc.io, arg->out.num_bytes);
 	io_inc_tail (&c->rem.io, arg->in.num_bytes);
-	c->loc.chan.emb.state = arg->state;	/*Save state */
+	c->loc.chan.emb.state = arg->state;	/*Save state*/
 
 	/*
 	 * If callback finished output, that means it did all cleanup.
@@ -44,7 +44,7 @@ static void call_user (struct conn *c, struct shttpd_arg *arg, shttpd_callback_t
 	 * the callback via the stream close() method from disconnect.
 	 * However, if cleanup is already done, we set close() method to
 	 * NULL, to prevent the call from disconnect().
-	 */
+	*/
 
 	if (arg->flags & SHTTPD_END_OF_OUTPUT)
 		c->loc.flags &= ~FLAG_DONT_CLOSE;
@@ -59,7 +59,7 @@ static int do_embedded (struct stream *stream, void *buf, size_t len)
 {
 	struct shttpd_arg arg;
 	buf = NULL;
-	len = 0;											/*Squash warnings */
+	len = 0;											/*Squash warnings*/
 
 	arg.user_data = stream->conn->loc.chan.emb.data;
 	arg.flags = 0;
@@ -80,7 +80,7 @@ static void close_embedded (struct stream *stream)
 	/*
 	 * Do not call the user function if SHTTPD_END_OF_OUTPUT was set,
 	 * i.e. the callback already terminated correctly
-	 */
+	*/
 	if (stream->flags & FLAG_DONT_CLOSE)
 		call_user (stream->conn, &arg, (shttpd_callback_t) c->loc.chan.emb.func.v_func);
 }
@@ -156,7 +156,7 @@ const char *shttpd_get_env (struct shttpd_arg *arg, const char *env_name)
 	}
 	else if (strcmp (env_name, "REMOTE_ADDR") == 0)
 	{
-		return (inet_ntoa (c->sa.u.sin.sin_addr));	/*FIXME NOT MT safe */
+		return (inet_ntoa (c->sa.u.sin.sin_addr));	/*FIXME NOT MT safe*/
 	}
 
 	return (NULL);
@@ -189,19 +189,19 @@ int shttpd_get_var (const char *var, const char *buf, int buf_len, char *value, 
 	size_t var_len;
 
 	var_len = strlen (var);
-	e = buf + buf_len;						/*End of QUERY_STRING buffer */
+	e = buf + buf_len;						/*End of QUERY_STRING buffer*/
 
-	/*buf is "var1=val1&var2=val2...". Find variable first */
+	/*buf is "var1=val1&var2=val2...". Find variable first*/
 	for (p = buf; p + var_len < e; p++)
 		if ((p == buf || p[-1] == '&') && p[var_len] == '=' && !_shttpd_strncasecmp (var, p, var_len))
 		{
 
-			/*Point 'p' to var value, 's' to the end of value */
+			/*Point 'p' to var value, 's' to the end of value*/
 			p += var_len + 1;
 			if ((s = memchr (p, '&', e - p)) == NULL)
 				s = e;
 
-			/*URL-decode value. Return result length */
+			/*URL-decode value. Return result length*/
 			return (_shttpd_url_decode (p, s - p, value, value_len));
 		}
 

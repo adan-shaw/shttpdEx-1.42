@@ -41,7 +41,7 @@ static int protect_against_code_disclosure (const wchar_t *path)
 	 * the CGI code disclosure.
 	 * To protect, here we delete all fishy characters from the
 	 * end of file name.
-	 */
+	*/
 
 	if ((handle = FindFirstFileW (path, &data)) == INVALID_HANDLE_VALUE)
 		return (FALSE);
@@ -166,13 +166,13 @@ char *_shttpd_getcwd (char *buffer, int maxlen)
 
 	if (buffer)
 	{
-		/*User-supplied buffer */
+		/*User-supplied buffer*/
 		wbuffer = malloc (maxlen * sizeof (wchar_t));
 		if (wbuffer == NULL)
 			return NULL;
 	}
 	else
-		/*Dynamically allocated buffer */
+		/*Dynamically allocated buffer*/
 		wbuffer = NULL;
 	wresult = _wgetcwd (wbuffer, maxlen);
 	if (wresult)
@@ -180,7 +180,7 @@ char *_shttpd_getcwd (char *buffer, int maxlen)
 		int err = errno;
 		if (buffer)
 		{
-			/*User-supplied buffer */
+			/*User-supplied buffer*/
 			int n = WideCharToMultiByte (CP_UTF8, 0, wresult, -1, buffer, maxlen, NULL, NULL);
 			if (n == 0)
 				err = ERANGE;
@@ -189,7 +189,7 @@ char *_shttpd_getcwd (char *buffer, int maxlen)
 		}
 		else
 		{
-			/*Buffer allocated by _wgetcwd() */
+			/*Buffer allocated by _wgetcwd()*/
 			result = wide_to_utf8 (wresult);
 			err = errno;
 			free (wresult);
@@ -282,7 +282,7 @@ int _shttpd_set_non_blocking_mode (int fd)
 
 void _shttpd_set_close_on_exec (int fd)
 {
-	fd = 0;												/*Do nothing. There is no FD_CLOEXEC on Windows */
+	fd = 0;												/*Do nothing. There is no FD_CLOEXEC on Windows*/
 }
 
 #if !defined(NO_CGI)
@@ -343,7 +343,7 @@ stdoutput (void *arg)
 		max_recv = min (sizeof (buf), tp->content_len - total);
 	}
 
-	CloseHandle (tp->hPipe);			/*Suppose we have POSTed everything */
+	CloseHandle (tp->hPipe);			/*Suppose we have POSTed everything*/
 	free (tp);
 }
 
@@ -386,7 +386,7 @@ static void stdinput (void *arg)
 	 * fix the problem, but I am not sure this is the right fix.
 	 * XXX (submitted by James Marshall) we do not do shutdown() on UNIX.
 	 * If fork() is called from user callback, shutdown() messes up things.
-	 */
+	*/
 	shutdown (tp->s, 2);
 
 	closesocket (tp->s);
@@ -421,7 +421,7 @@ int _shttpd_spawn_process (struct conn *c, const char *prog, char *envblk, char 
 	me = GetCurrentProcess ();
 	flags = DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS;
 
-	/*FIXME add error checking code here */
+	/*FIXME add error checking code here*/
 	CreatePipe (&a[0], &a[1], NULL, 0);
 	CreatePipe (&b[0], &b[1], NULL, 0);
 	DuplicateHandle (me, a[0], me, &h[0], 0, TRUE, flags);
@@ -430,14 +430,14 @@ int _shttpd_spawn_process (struct conn *c, const char *prog, char *envblk, char 
 	(void) memset (&si, 0, sizeof (si));
 	(void) memset (&pi, 0, sizeof (pi));
 
-	/*XXX redirect CGI errors to the error log file */
+	/*XXX redirect CGI errors to the error log file*/
 	si.cb = sizeof (si);
 	si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
 	si.wShowWindow = SW_HIDE;
 	si.hStdOutput = h[1];
 	si.hStdInput = h[0];
 
-	/*If CGI file is a script, try to read the interpreter line */
+	/*If CGI file is a script, try to read the interpreter line*/
 	interp = c->ctx->options[OPT_CGI_INTERPRETER];
 	if (interp == NULL)
 	{
@@ -446,7 +446,7 @@ int _shttpd_spawn_process (struct conn *c, const char *prog, char *envblk, char 
 			(void) fgets (line, sizeof (line), fp);
 			if (memcmp (line, "#!", 2) != 0)
 				line[2] = '\0';
-			/*Trim whitespaces from interpreter name */
+			/*Trim whitespaces from interpreter name*/
 			for (p = &line[strlen (line) - 1]; p > line && isspace (*p); p--)
 				*p = '\0';
 			(void) fclose (fp);
@@ -467,7 +467,7 @@ int _shttpd_spawn_process (struct conn *c, const char *prog, char *envblk, char 
 	/*
 	 * Spawn reader & writer threads before we create CGI process.
 	 * Otherwise CGI process may die too quickly, loosing the data
-	 */
+	*/
 	spawn_stdio_thread (sock, b[0], stdinput, 0);
 	spawn_stdio_thread (sock, a[1], stdoutput, c->rem.content_len);
 
@@ -487,7 +487,7 @@ int _shttpd_spawn_process (struct conn *c, const char *prog, char *envblk, char 
 	return (0);
 }
 
-#endif /*!NO_CGI */
+#endif /*!NO_CGI*/
 
 #define	ID_TRAYICON	100
 #define	ID_QUIT		101
@@ -659,7 +659,7 @@ static void WINAPI ServiceMain (int argc, char *argv[])
 	if ((p = strrchr (path, DIRSEP)) != NULL)
 		*++p = '\0';
 
-	strcat (path, CONFIG_FILE);		/*woo ! */
+	strcat (path, CONFIG_FILE);		/*woo !*/
 
 	ctx = shttpd_init (NELEMS (av) - 1, av);
 	if ((ctx = shttpd_init (NELEMS (av) - 1, av)) == NULL)

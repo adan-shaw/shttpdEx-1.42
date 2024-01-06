@@ -20,9 +20,9 @@ extern "C"
 
 	struct ubuf
 	{
-		char *buf;									/*Buffer pointer */
-		int len;										/*Size of a buffer */
-		int num_bytes;							/*Bytes processed by callback */
+		char *buf;									/*Buffer pointer*/
+		int len;										/*Size of a buffer*/
+		int num_bytes;							/*Bytes processed by callback*/
 	};
 
 /*
@@ -30,19 +30,19 @@ extern "C"
 */
 	struct shttpd_arg
 	{
-		void *priv;									/*Private! Do not touch! */
-		void *state;								/*User state */
-		void *user_data;						/*Data from register_uri() */
-		struct ubuf in;							/*Input is here, POST data */
-		struct ubuf out;						/*Output goes here */
+		void *priv;									/*Private! Do not touch!*/
+		void *state;								/*User state*/
+		void *user_data;						/*Data from register_uri()*/
+		struct ubuf in;							/*Input is here, POST data*/
+		struct ubuf out;						/*Output goes here*/
 
 		unsigned int flags;
-#define	SHTTPD_END_OF_OUTPUT	1	/*No more data do send */
-#define	SHTTPD_CONNECTION_ERROR	2	/*Server closed the connection */
-#define	SHTTPD_MORE_POST_DATA	4	/*arg->in has incomplete data */
-#define	SHTTPD_POST_BUFFER_FULL	8	/*arg->in has max data */
-#define	SHTTPD_SSI_EVAL_TRUE	16	/*SSI eval callback must set it */
-#define	SHTTPD_SUSPEND		32		/*User wants to suspend output */
+#define	SHTTPD_END_OF_OUTPUT	1	/*No more data do send*/
+#define	SHTTPD_CONNECTION_ERROR	2	/*Server closed the connection*/
+#define	SHTTPD_MORE_POST_DATA	4	/*arg->in has incomplete data*/
+#define	SHTTPD_POST_BUFFER_FULL	8	/*arg->in has max data*/
+#define	SHTTPD_SSI_EVAL_TRUE	16	/*SSI eval callback must set it*/
+#define	SHTTPD_SUSPEND		32		/*User wants to suspend output*/
 	};
 
 /*
@@ -106,4 +106,4 @@ extern "C"
 }
 #endif													/*__cplusplus*/
 
-#endif													/*SHTTPD_HEADER_INCLUDED */
+#endif													/*SHTTPD_HEADER_INCLUDED*/

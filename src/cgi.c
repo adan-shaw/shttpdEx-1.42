@@ -13,10 +13,10 @@
 #if !defined(NO_CGI)
 struct env_block
 {
-	char buf[ENV_MAX];						/*Environment buffer */
-	int len;											/*Space taken */
-	char *vars[CGI_ENV_VARS];			/*Point into the buffer */
-	int nvars;										/*Number of variables */
+	char buf[ENV_MAX];						/*Environment buffer*/
+	int len;											/*Space taken*/
+	char *vars[CGI_ENV_VARS];			/*Point into the buffer*/
+	int nvars;										/*Number of variables*/
 };
 
 static void addenv (struct env_block *block, const char *fmt, ...)
@@ -34,7 +34,7 @@ static void addenv (struct env_block *block, const char *fmt, ...)
 	if (n > 0 && n < space && block->nvars < CGI_ENV_VARS - 2)
 	{
 		block->vars[block->nvars++] = block->buf + block->len;
-		block->len += n + 1;				/*Include \0 terminator */
+		block->len += n + 1;				/*Include \0 terminator*/
 	}
 }
 
@@ -43,31 +43,31 @@ static void add_http_headers_to_env (struct env_block *b, const char *s, int len
 	const char *p, *v, *e = s + len;
 	int space, n, i, ch;
 
-	/*Loop through all headers in the request */
+	/*Loop through all headers in the request*/
 	while (s < e)
 	{
 
-		/*Find where this header ends. Remember where value starts */
+		/*Find where this header ends. Remember where value starts*/
 		for (p = s, v = NULL; p < e && *p != '\n'; p++)
 			if (v == NULL && *p == ':')
 				v = p;
 
-		/*2 null terminators and "HTTP_" */
+		/*2 null terminators and "HTTP_"*/
 		space = (sizeof (b->buf) - b->len) - (2 + 5);
 		assert (space >= 0);
 
-		/*Copy header if enough space in the environment block */
+		/*Copy header if enough space in the environment block*/
 		if (v > s && p > v + 2 && space > p - s)
 		{
 
-			/*Store var */
+			/*Store var*/
 			if (b->nvars < (int) NELEMS (b->vars) - 1)
 				b->vars[b->nvars++] = b->buf + b->len;
 
 			(void) memcpy (b->buf + b->len, "HTTP_", 5);
 			b->len += 5;
 
-			/*Copy header name. Substitute '-' to '_' */
+			/*Copy header name. Substitute '-' to '_'*/
 			n = v - s;
 			for (i = 0; i < n; i++)
 			{
@@ -77,17 +77,17 @@ static void add_http_headers_to_env (struct env_block *b, const char *s, int len
 
 			b->buf[b->len++] = '=';
 
-			/*Copy header value */
+			/*Copy header value*/
 			v += 2;
 			n = p[-1] == '\r' ? (p - v) - 1 : p - v;
 			for (i = 0; i < n; i++)
 				b->buf[b->len++] = v[i];
 
-			/*Null-terminate */
+			/*Null-terminate*/
 			b->buf[b->len++] = '\0';
 		}
 
-		s = p + 1;									/*Shift to the next header */
+		s = p + 1;									/*Shift to the next header*/
 	}
 }
 
@@ -99,16 +99,16 @@ static void prepare_environment (const struct conn *c, const char *prog, struct 
 
 	blk->len = blk->nvars = 0;
 
-	/*SCRIPT_FILENAME */
+	/*SCRIPT_FILENAME*/
 	fname = prog;
 	if ((s = strrchr (prog, '/')))
 		fname = s + 1;
 
-	/*Prepare the environment block */
+	/*Prepare the environment block*/
 	addenv (blk, "%s", "GATEWAY_INTERFACE=CGI/1.1");
 	addenv (blk, "%s", "SERVER_PROTOCOL=HTTP/1.1");
 	addenv (blk, "%s", "REDIRECT_STATUS=200");
-	/*PHP*/ addenv (blk, "SERVER_PORT=%d", c->loc_port);
+	 /*PHP*/ addenv (blk, "SERVER_PORT=%d", c->loc_port);
 	addenv (blk, "SERVER_NAME=%s", c->ctx->options[OPT_AUTH_REALM]);
 	addenv (blk, "SERVER_ROOT=%s", root);
 	addenv (blk, "DOCUMENT_ROOT=%s", root);
@@ -118,7 +118,7 @@ static void prepare_environment (const struct conn *c, const char *prog, struct 
 	addenv (blk, "REQUEST_URI=%s", c->uri);
 	addenv (blk, "SCRIPT_NAME=%s", prog + strlen (root));
 	addenv (blk, "SCRIPT_FILENAME=%s", fname);
-	/*PHP*/ addenv (blk, "PATH_TRANSLATED=%s", prog);
+	 /*PHP*/ addenv (blk, "PATH_TRANSLATED=%s", prog);
 
 	if (h->ct.v_vec.len > 0)
 		addenv (blk, "CONTENT_TYPE=%.*s", h->ct.v_vec.len, h->ct.v_vec.ptr);
@@ -154,11 +154,11 @@ static void prepare_environment (const struct conn *c, const char *prog, struct 
 		addenv (blk, "%s", "AUTH_TYPE=Digest");
 	}
 
-	/*Add user-specified variables */
+	/*Add user-specified variables*/
 	s = c->ctx->options[OPT_CGI_ENVIRONMENT];
 	FOR_EACH_WORD_IN_LIST (s, len) addenv (blk, "%.*s", len, s);
 
-	/*Add all headers as HTTP_* variables */
+	/*Add all headers as HTTP_* variables*/
 	add_http_headers_to_env (blk, c->headers, c->rem.headers_len - (c->headers - c->request));
 
 	blk->vars[blk->nvars++] = NULL;
@@ -168,7 +168,7 @@ static void prepare_environment (const struct conn *c, const char *prog, struct 
 	assert (blk->len > 0);
 	assert (blk->len < (int) sizeof (blk->buf));
 
-	/*Debug stuff to view passed environment */
+	/*Debug stuff to view passed environment*/
 	DBG (("%s: %d vars, %d env size", prog, blk->nvars, blk->len));
 	{
 		int i;
@@ -186,7 +186,7 @@ int _shttpd_run_cgi (struct conn *c, const char *prog)
 	prepare_environment (c, prog, &blk);
 	pair[0] = pair[1] = -1;
 
-	/*CGI must be executed in its own directory */
+	/*CGI must be executed in its own directory*/
 	(void) _shttpd_snprintf (dir, sizeof (dir), "%s", prog);
 	for (p = dir + strlen (dir) - 1; p > dir; p--)
 		if (*p == '/')
@@ -226,4 +226,4 @@ void _shttpd_do_cgi (struct conn *c)
 		c->loc.flags |= FLAG_W;
 }
 
-#endif /*!NO_CGI */
+#endif /*!NO_CGI*/

@@ -57,4 +57,4 @@ struct llhead
 	for (N = (H)->next, T = (N)->next; N != (H);			\
 			N = (T), T = (N)->next)
 
-#endif /*LLIST_HEADER_INCLUDED */
+#endif /*LLIST_HEADER_INCLUDED*/

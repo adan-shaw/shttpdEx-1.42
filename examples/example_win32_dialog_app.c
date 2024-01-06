@@ -32,6 +32,7 @@ static BOOL CALLBACK DlgProc (HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		ctx = shttpd_init (argc, argv);
 		SetTimer (hDlg, ID_TIMER, 250, NULL);	// poll every 250 ms
 		break;
+
 	default:
 		break;
 	}

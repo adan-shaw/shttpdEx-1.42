@@ -1,5 +1,13 @@
+# release
+CFLAGS= -DNDEBUG -O2
+
+# debug
+#CFLAGS= -D_DEBUG -O2 -g3
+
+
+
 all:
-	echo "make (unix|msvc)"
+	echo "make (linux|unix|msvc)"
 
 clean:
 	rm -f a.out*
@@ -7,8 +15,12 @@ clean:
 ../src/libshttpd.a:
 	cd ../src && $(MAKE) unix
 
+linux:
+	cd ../src && $(MAKE) linux
+	$(CC) $(CFLAGS) example.c -I ../src -L ../src -o example -ldl -lpthread -lshttpd
+
 unix: ../src/libshttpd.a
-	$(CC) $(CFLAGS) example.c -I ../src  ../src/libshttpd.a -o example
+	$(CC) $(CFLAGS) example.c -I ../src -L ../src -o example -lshttpd
 
 WIN32_LIBS= user32.lib shell32.lib ws2_32.lib advapi32.lib ..\src\shttpd.lib
 CL_FLAGS= /MD /DNDEBUG /nologo /Zi /I ..\src

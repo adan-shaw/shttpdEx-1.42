@@ -11,7 +11,7 @@
 #ifndef STD_HEADERS_INCLUDED
 #define	STD_HEADERS_INCLUDED
 
-#ifndef _WIN32_WCE							/*Some ANSI #includes are not available on Windows CE */
+#ifndef _WIN32_WCE							/*Some ANSI #includes are not available on Windows CE*/
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -29,12 +29,12 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#if defined(_WIN32)							/*Windows specific */
+#if defined(_WIN32)							/*Windows specific*/
 #include "compat_win32.h"
-#elif defined(__rtems__)				/*RTEMS specific */
+#elif defined(__rtems__)				/*RTEMS specific*/
 #include "compat_rtems.h"
-#else	/*UNIX  specific */
+#else	/*UNIX  specific*/
 #include "compat_unix.h"
 #endif /*_WIN32*/
 
-#endif /*STD_HEADERS_INCLUDED */
+#endif /*STD_HEADERS_INCLUDED*/

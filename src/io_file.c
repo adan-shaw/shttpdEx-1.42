@@ -43,7 +43,7 @@ static int read_file (struct stream *stream, void *buf, size_t len)
 	sock = stream->conn->rem.chan.sock;
 	fd = stream->chan.fd;
 
-	/*If this is the first call for this file, send the headers */
+	/*If this is the first call for this file, send the headers*/
 	vec.iov_base = stream->io.buf;
 	vec.iov_len = stream->headers_len;
 	if (stream->io.total > 0)
@@ -60,7 +60,7 @@ static int read_file (struct stream *stream, void *buf, size_t len)
 
 	stream->conn->ctx->out += sent;
 
-	/*If we have sent the HTTP headers in this turn, clear them off */
+	/*If we have sent the HTTP headers in this turn, clear them off*/
 	if (stream->io.total == 0)
 	{
 		assert (sent >= stream->headers_len);
@@ -73,7 +73,7 @@ static int read_file (struct stream *stream, void *buf, size_t len)
 	stream->flags |= FLAG_DONT_CLOSE;
 
 	return (0);
-#endif /*USE_SENDFILE */
+#endif /*USE_SENDFILE*/
 
 	assert (stream->chan.fd != -1);
 	return (read (stream->chan.fd, buf, len));
@@ -91,13 +91,13 @@ void _shttpd_get_file (struct conn *c, struct stat *stp)
 	size_t n, status = 200;
 	unsigned long r1, r2;
 	const char *fmt = "%a, %d %b %Y %H:%M:%S GMT", *msg = "OK";
-	big_int_t cl;									/*Content-Length */
+	big_int_t cl;									/*Content-Length*/
 
 	if (c->mime_type.len == 0)
 		_shttpd_get_mime_type (c->ctx, c->uri, strlen (c->uri), &c->mime_type);
 	cl = (big_int_t) stp->st_size;
 
-	/*If Range: header specified, act accordingly */
+	/*If Range: header specified, act accordingly*/
 	if (c->ch.range.v_vec.len > 0 && (n = sscanf (c->ch.range.v_vec.ptr, "bytes=%lu-%lu", &r1, &r2)) > 0)
 	{
 		status = 206;
@@ -107,7 +107,7 @@ void _shttpd_get_file (struct conn *c, struct stat *stp)
 		msg = "Partial Content";
 	}
 
-	/*Prepare Etag, Date, Last-Modified headers */
+	/*Prepare Etag, Date, Last-Modified headers*/
 	(void) strftime (date, sizeof (date), fmt, localtime (&_shttpd_current_time));
 	(void) strftime (lm, sizeof (lm), fmt, localtime (&stp->st_mtime));
 	(void) _shttpd_snprintf (etag, sizeof (etag), "%lx.%lx", (unsigned long) stp->st_mtime, (unsigned long) stp->st_size);
@@ -116,7 +116,7 @@ void _shttpd_get_file (struct conn *c, struct stat *stp)
 	 * We do not do io_inc_head here, because it will increase 'total'
 	 * member in io. We want 'total' to be equal to the content size,
 	 * and exclude the headers length from it.
-	 */
+	*/
 	c->loc.io.head = c->loc.headers_len = _shttpd_snprintf (c->loc.io.buf, c->loc.io.size, "HTTP/1.1 %d %s\r\n" "Date: %s\r\n" "Last-Modified: %s\r\n" "Etag: \"%s\"\r\n" "Content-Type: %.*s\r\n" "Content-Length: %lu\r\n" "Accept-Ranges: bytes\r\n" "%s\r\n", status, msg, date, lm, etag, c->mime_type.len, c->mime_type.ptr, cl, range);
 
 	c->status = status;

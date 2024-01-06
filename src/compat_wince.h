@@ -42,18 +42,18 @@ extern "C"
 
 	struct tm
 	{
-		int tm_sec;									/*seconds after the minute - [0,59] */
-		int tm_min;									/*minutes after the hour - [0,59] */
-		int tm_hour;								/*hours since midnight - [0,23] */
-		int tm_mday;								/*day of the month - [1,31] */
-		int tm_mon;									/*months since January - [0,11] */
-		int tm_year;								/*years since 1900 */
-		int tm_wday;								/*days since Sunday - [0,6] */
-		int tm_yday;								/*days since January 1 - [0,365] */
-		int tm_isdst;								/*daylight savings time flag */
+		int tm_sec;									/*seconds after the minute - [0,59]*/
+		int tm_min;									/*minutes after the hour - [0,59]*/
+		int tm_hour;								/*hours since midnight - [0,23]*/
+		int tm_mday;								/*day of the month - [1,31]*/
+		int tm_mon;									/*months since January - [0,11]*/
+		int tm_year;								/*years since 1900*/
+		int tm_wday;								/*days since Sunday - [0,6]*/
+		int tm_yday;								/*days since January 1 - [0,365]*/
+		int tm_isdst;								/*daylight savings time flag*/
 	};
 
-	struct tm *gmtime (const time_t * TimeP);	/*for future use */
+	struct tm *gmtime (const time_t * TimeP);	/*for future use*/
 	struct tm *localtime (const time_t * TimeP);
 	time_t mktime (struct tm *tm);
 	time_t time (time_t * TimeP);
@@ -102,12 +102,12 @@ extern "C"
 #define S_IWRITE 0000200
 #define S_IREAD  0000400
 
-#define _S_IFDIR S_IFDIR				/*MSVCRT compatibilit */
+#define _S_IFDIR S_IFDIR				/*MSVCRT compatibilit*/
 
 	int _fstat (int handle, struct _stat *buffer);
 	int _wstat (const wchar_t *path, struct _stat *buffer);
 
-#define stat _stat							/*NOTE: applies to _stat() and also struct _stat */
+#define stat _stat							/*NOTE: applies to _stat() and also struct _stat*/
 #define fstat _fstat
 
 #define	O_RDWR		(1<<0)
@@ -144,4 +144,4 @@ extern "C"
 }
 #endif
 
-#endif													/*INCLUDE_WINCE_COMPAT_H */
+#endif													/*INCLUDE_WINCE_COMPAT_H*/
