@@ -21,7 +21,31 @@ ps:
 	./auto_test.sh
 	./man
 	./man-shttpd1.42
-
+	./certs/auto_pem.sh
+	./certs/*
+	./shttpd_ssl.so
 
 
 其他基本上没有改动, 代码质量可以, 想要该这个project 的源码, 压力有点大, 出错再改吧;
+
+由于目前openssl 已经把SSLv3 SSLv23 等代码踢出libssl.so, 于是集成了一个./shttpd_ssl.so, 方便大家调试(虽然现在SSL 协议已经不安全了)
+
+anyway, 本次更新也将SSLv23 替换为SSLv3, 虽然意义不大, 但是还是替换了;
+
+
+
+最后做了一些简单的打包工作, 可以做到一键测试了;
+
+阅读这个project 的代码, 一般情况下, 适合用在嵌入式行业(如果需要植入httpd 的话);
+
+比较困难的是openssl 的libssl.so 代码移植, 其他应该都问题不大;
+
+
+
+ps:
+	./shttpd_ssl.so 仅适用与linux-amd64 平台, 其他平台的话, 请自己编译带有:
+		SSLv3_server_method
+		SSLv23_server_method
+	这两个API 的libssl.so, 否则编译后运行会报错: 
+		set_ssl: cannot find SSLv3_server_method
+		set_ssl: cannot find SSLv23_server_method

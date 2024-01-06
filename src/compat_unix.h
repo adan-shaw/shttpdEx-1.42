@@ -27,7 +27,7 @@
 	pthread_create(&tid, NULL, (void *(*)(void *))a, c); } while (0)
 #endif /*!NO_THREADS*/
 
-#define	SSL_LIB				"shttpd_ssl.so"
+#define	SSL_LIB				"./shttpd_ssl.so"
 //#define	SSL_LIB				"/usr/lib/x86_64-linux-gnu/libssl.so"
 #define	DIRSEP				'/'
 #define	IS_DIRSEP_CHAR(c)		((c) == '/')
