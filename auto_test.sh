@@ -11,10 +11,10 @@
 # 开始在端口8080上侦听HTTP, 在端口8043上侦听HTTPS连接.
 # 使用/etc/cert.pem作为SSL证书文件.Web根目录是/var/.
 # 此外, 将目录/tmp映射到URI/aa, 将目录/etc映射到URI/bb.
-rm /tmp/cacert.pem
-cp ./certs/cacert.pem /tmp/cacert.pem
-./src/shttpd -root /var/www -ports 8080,8043s -ssl_cert /tmp/cacert.pem -aliases /aa=/tmp,/bb=/etc
-#./src/shttpd -root /var/www -ports 8080,8043 -ssl_cert /tmp/cacert.pem -aliases /aa=/tmp,/bb=/etc
+rm /tmp/ca.pem
+cp ./certs/ca.pem /tmp/ca.pem
+./src/shttpd -root /var/www -ports 8080,8043s -ssl_cert /tmp/ca.pem -aliases /aa=/tmp,/bb=/etc
+#./src/shttpd -root /var/www -ports 8080,8043 -ssl_cert /tmp/ca.pem -aliases /aa=/tmp,/bb=/etc
 
 curl 127.0.0.1:8080
 curl -k --insecure 127.0.0.1:8043
