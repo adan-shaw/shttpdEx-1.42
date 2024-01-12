@@ -38,6 +38,6 @@ cd ..
 
 
 
-openssl genrsa -out privkey.pem 2048
+openssl genrsa -out private.key 2048
 
-openssl req -new -x509 -key privkey.pem -out cacert.pem -days 3650
+openssl req -new -x509 -key private.key -out ca.pem -days 3650
